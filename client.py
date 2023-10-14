@@ -1,3 +1,6 @@
+"""
+amit skarbin
+"""
 from vidstream import CameraClient, VideoClient, ScreenShareClient
 import logging
 
@@ -24,10 +27,6 @@ class CameraStreamClient(Client):
     def __init__(self, host, port):
         super().__init__(host, port)
         self.client = CameraClient(self.host, self.port)
-
-    def connect(self):
-        self.client.connect()
-        logging.info(f"Connected to server: {self.host}:{self.port}")
 
     def start_stream(self):
         self.client.start_stream()
@@ -75,15 +74,12 @@ class ScreenShareStreamClient(Client):
 
 
 if __name__ == '__main__':
-    client1 = CameraStreamClient('192.168.68.120', 4532)
-    client2 = VideoStreamClient('192.168.68.120', 4532, 'video.mp4')
-    client3 = ScreenShareStreamClient('192.168.68.120', 4532)
+    client1 = CameraStreamClient('192.168.68.124', 4532)
+    client2 = VideoStreamClient('192.168.68.124', 4532, 'video.mp4')
+    client3 = ScreenShareStreamClient('192.168.68.124', 4532)
 
-    client1.connect()
     client1.start_stream()
 
-    client2.connect()
     client2.start_stream()
 
-    client3.connect()
     client3.start_stream()
