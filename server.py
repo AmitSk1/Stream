@@ -4,6 +4,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
+
 class Server:
     def __init__(self, host, port):
         self.server = StreamingServer(host, port)
@@ -17,6 +18,7 @@ class Server:
         with self.lock:
             self.clients.append(client)
             logging.info(f"New client connected: {client}")
+            client.send("Welcome to the server!")  # Add a welcome message for the client here
 
     def remove_client(self, client):
         with self.lock:
@@ -28,7 +30,8 @@ class Server:
             for client in self.clients:
                 client.send(message)
 
+
 if __name__ == '__main__':
-    server = Server('192.168.68.120', 4532)
+    server = Server('192.168.68.124', 4532)
     server_thread = threading.Thread(target=server.start_server)
     server_thread.start()
