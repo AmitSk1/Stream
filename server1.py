@@ -9,7 +9,7 @@ from math import ceil
 
 
 class StreamingServer:
-    def __init__(self, host='127.0.0.1', port=9999):
+    def __init__(self, host='127.0.0.1', port=5432):
         self.host = host
         self.port = port
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -28,10 +28,13 @@ class StreamingServer:
 
     def accept_connections(self):
         while self.running:
-            client_socket, client_address = self.server_socket.accept()
-            print(f"Connection from {client_address} has been established.")
-            client_thread = threading.Thread(target=self.client_handler, args=(client_socket,))
-            client_thread.start()
+            try:
+                client_socket, client_address = self.server_socket.accept()
+                print(f"Connection from {client_address} has been established.")
+                client_thread = threading.Thread(target=self.client_handler, args=(client_socket,))
+                client_thread.start()
+            except Exception as e:
+                print(f"Error accepting connections: {e}")
 
     def client_handler(self, client_socket):
         payload_size = struct.calcsize('>L')

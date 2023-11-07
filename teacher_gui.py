@@ -1,6 +1,6 @@
 import threading
-import logging
-from tkinter import Tk, Button, Listbox, END, messagebox, filedialog
+from tkinter import Tk, Button, Listbox, messagebox
+
 from server1 import StreamingServer
 
 
@@ -11,30 +11,25 @@ class ServerGUI:
         self.window.title("Teacher's Dashboard")
         self.setup_gui()
 
-    def send_file_to_students(self):
-        file_path = filedialog.askopenfilename()
-        if file_path:
-            threading.Thread(target=self.server.send_file, args=(file_path,), daemon=True).start()
+    def setup_gui(self):
+        Button(self.window, text="Start Server", command=self.start_server).pack()
+        self.active_students_list = Listbox(self.window)
+        self.active_students_list.pack()
+
+        self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+    def start_server(self):
+        threading.Thread(target=self.server.start_server, daemon=True).start()
 
     def on_closing(self):
         if messagebox.askokcancel("Quit", "Do you want to shut down the server?"):
             self.server.stop_server()
             self.window.destroy()
 
-    def setup_gui(self):
-        Button(self.window, text="Finish Test", command=self.finish_test).pack()
-        self.active_students_list = Listbox(self.window)
-        self.active_students_list.pack()
-        self.active_students_list.pack()
-
     def run(self):
-        threading.Thread(target=self.server.start_server, daemon=True).start()
         self.window.mainloop()
-
-    def finish_test(self):
-        self.server.finish_test()
 
 
 if __name__ == "__main__":
-    gui = ServerGUI('127.0.0.1', 2587)
+    gui = ServerGUI('127.0.0.1', 5432)  # Ensure the port here matches the server's port
     gui.run()
