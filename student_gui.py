@@ -10,6 +10,7 @@ class ClientGUI:
         self.setup_gui()
 
     def setup_gui(self):
+        self.client.connect_to_server()
         self.label = Label(self.window, text="Enter your name:")
         self.label.pack()
 

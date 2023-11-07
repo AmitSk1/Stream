@@ -20,11 +20,7 @@ class StreamingClient:
         self.username = None  # To store the username
 
     def connect_to_server(self):
-        try:
-            self.client_socket.connect((self.host, self.port))
-            print("Connected to server successfully.")
-        except Exception as e:
-            print(f"Failed to connect to server: {e}")
+        self.client_socket.connect((self.host, self.port))
 
     def start_stream(self, username):
         self.username = username
@@ -73,3 +69,8 @@ class StreamingClient:
             cv2.waitKey(int(1000 / self.fps))  # Control the frame rate based on FPS
 
         self.stop_stream()
+
+if __name__ == "__main__":
+    client = StreamingClient('127.0.0.1', 2587)
+    client.connect_to_server()
+    client.start_stream('YourUsername')
