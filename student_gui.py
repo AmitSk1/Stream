@@ -31,5 +31,5 @@ class ClientGUI:
 
 
 if __name__ == "__main__":
-    gui = ClientGUI('127.0.0.1', 5432)  # Ensure the port here matches the server's port
+    gui = ClientGUI('192.168.68.124', 1254)  # Ensure the port here matches the server's port
     gui.run()

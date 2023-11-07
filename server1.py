@@ -9,7 +9,7 @@ from math import ceil
 
 
 class StreamingServer:
-    def __init__(self, host='127.0.0.1', port=5432):
+    def __init__(self, host, port):
         self.host = host
         self.port = port
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -84,7 +84,3 @@ class StreamingServer:
         print("Server stopped.")
 
 
-if __name__ == "__main__":
-    server = StreamingServer()
-    server.start_server()
-    # The server will now display streams until manually stopped.

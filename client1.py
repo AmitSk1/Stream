@@ -70,7 +70,4 @@ class StreamingClient:
 
         self.stop_stream()
 
-if __name__ == "__main__":
-    client = StreamingClient('127.0.0.1', 2587)
-    client.connect_to_server()
-    client.start_stream('YourUsername')
+
