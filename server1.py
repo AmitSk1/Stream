@@ -9,7 +9,15 @@ from math import ceil
 
 
 class StreamingServer:
+    """
+    A server for handling incoming video streams from multiple clients.
+
+    """
+
     def __init__(self, host, port):
+        """
+        Initializes the StreamingServer with the server address.
+        """
         self.host = host
         self.port = port
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -20,6 +28,7 @@ class StreamingServer:
         self.running = False
 
     def start_server(self):
+        """Starts the server to listen for incoming connections."""
         self.server_socket.listen()
         self.running = True
         print(f"Server started at {self.host}:{self.port}")
@@ -27,6 +36,7 @@ class StreamingServer:
         accept_thread.start()
 
     def accept_connections(self):
+        """Accepts incoming client connections and starts a handler for each."""
         while self.running:
             try:
                 client_socket, client_address = self.server_socket.accept()
@@ -37,6 +47,9 @@ class StreamingServer:
                 print(f"Error accepting connections: {e}")
 
     def client_handler(self, client_socket):
+        """
+        Handles the communication with a connected client.
+        """
         payload_size = struct.calcsize('>L')
         while self.running:
             try:
@@ -78,9 +91,8 @@ class StreamingServer:
         print(f"Client disconnected")
 
     def stop_server(self):
+        """Stops the server and releases all resources."""
         self.running = False
         self.server_socket.close()
         cv2.destroyAllWindows()
         print("Server stopped.")
-
-

@@ -9,7 +9,14 @@ from tkinter import Tk, Label, Button, Entry, StringVar
 
 
 class StreamingClient:
+    """
+    A client for streaming video data to a server.
+    """
+
     def __init__(self, host, port, resolution=(640, 360), fps=15):
+        """
+        Initializes the StreamingClient with the server address, resolution, and fps.
+        """
         self.host = host
         self.port = port
         self.resolution = resolution
@@ -20,9 +27,13 @@ class StreamingClient:
         self.username = None  # To store the username
 
     def connect_to_server(self):
+        """Establishes the socket connection with the server."""
         self.client_socket.connect((self.host, self.port))
 
     def start_stream(self, username):
+        """
+        Starts the video stream to the server.
+        """
         self.username = username
         self.running = True
         self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, self.resolution[0])
@@ -31,11 +42,15 @@ class StreamingClient:
         stream_thread.start()
 
     def stop_stream(self):
+        """Stops the video stream and releases resources."""
         self.running = False
         self.camera.release()  # Release the camera
         self.client_socket.close()
 
     def stream_video(self):
+        """
+        Captures video frames and sends them to the server.
+        """
         while self.running:
             # Capture screen
             screen = pyautogui.screenshot()
@@ -70,4 +85,14 @@ class StreamingClient:
 
         self.stop_stream()
 
-
+    def stop_client(self):
+        """
+        Signals the client to stop streaming and shuts down the connection.
+        """
+        if self.running:
+            print("Stopping the client...")
+            self.stop_stream()  # Stop the streaming thread
+            # Additional cleanup if necessary
+            print("Client stopped.")
+        else:
+            print("Client is not running.")
