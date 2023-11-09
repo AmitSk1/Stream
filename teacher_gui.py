@@ -1,5 +1,5 @@
 import threading
-from tkinter import Tk, Button, Listbox, messagebox
+from tkinter import Tk, Button, messagebox
 
 from server1 import StreamingServer
 
@@ -19,11 +19,8 @@ class ServerGUI:
         self.setup_gui()
 
     def setup_gui(self):
-        """Sets up the GUI components for the server control."""
+        """Sets up the GUI  for the server control."""
         Button(self.window, text="Start Server", command=self.start_server).pack()
-        self.active_students_list = Listbox(self.window)
-        self.active_students_list.pack()
-
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
     def start_server(self):
@@ -42,5 +39,5 @@ class ServerGUI:
 
 
 if __name__ == "__main__":
-    gui = ServerGUI('192.168.68.124', 1254)
+    gui = ServerGUI('127.0.0.1', 1254)
     gui.run()

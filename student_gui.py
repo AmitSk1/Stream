@@ -38,11 +38,10 @@ class ClientGUI:
             self.client.start_stream(username)
             self.create_control_window()
 
-    def stop_streaming(self):
+    def finish_test(self):
         """Stops the streaming process."""
         self.client.stop_client()
-        self.control_window.destroy()  # Close the control window
-        self.window.deiconify()  # Re-show the main window
+        self.on_closing()
 
     def on_closing(self):
         """Handles the GUI window closing event."""
@@ -57,7 +56,7 @@ class ClientGUI:
         self.control_window = Toplevel(self.window)
         self.control_window.title("Streaming Control")
         Label(self.control_window, text="Streaming is running...").pack()
-        stop_button = Button(self.control_window, text="Stop Streaming", command=self.stop_streaming)
+        stop_button = Button(self.control_window, text="Finish Test", command=self.finish_test)
         stop_button.pack()
 
     def run(self):
@@ -66,5 +65,5 @@ class ClientGUI:
 
 
 if __name__ == "__main__":
-    gui = ClientGUI('192.168.68.124', 1254)  # Ensure the port here matches the server's port
+    gui = ClientGUI('127.0.0.1', 1254)
     gui.run()

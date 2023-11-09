@@ -3,9 +3,6 @@ import threading
 import struct
 import pickle
 import cv2
-import numpy as np
-import time
-from math import ceil
 
 
 class StreamingServer:

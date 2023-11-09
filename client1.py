@@ -5,7 +5,6 @@ import pickle
 import threading
 import numpy as np
 import pyautogui
-from tkinter import Tk, Label, Button, Entry, StringVar
 
 
 class StreamingClient:
