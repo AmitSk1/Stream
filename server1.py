@@ -4,11 +4,16 @@ import struct
 import pickle
 import cv2
 
+# Constants
+PAYLOAD_SIZE_STRUCT_FORMAT = '>L'  # Format for struct packing of payload size
+RECEIVE_BUFFER_SIZE = 4096  # Buffer size for receiving data
+FRAME_DECODE_COLOR_MODE = cv2.IMREAD_COLOR  # Color mode for frame decoding
+KEY_PRESS_CHECK_DELAY = 1  # Delay for checking key press in milliseconds
+EXIT_KEY = ord('q')  # Key to press for exiting frame display
 
 class StreamingServer:
     """
     A server for handling incoming video streams from multiple clients.
-
     """
 
     def __init__(self, host, port):
@@ -47,22 +52,22 @@ class StreamingServer:
         """
         Handles the communication with a connected client.
         """
-        payload_size = struct.calcsize('>L')
+        payload_size = struct.calcsize(PAYLOAD_SIZE_STRUCT_FORMAT)
         while self.running:
             try:
                 data = b""
                 while len(data) < payload_size:
-                    packet = client_socket.recv(4096)
+                    packet = client_socket.recv(RECEIVE_BUFFER_SIZE)
                     if not packet: break
                     data += packet
                 if data == b"": break
 
                 packed_msg_size = data[:payload_size]
                 data = data[payload_size:]
-                msg_size = struct.unpack(">L", packed_msg_size)[0]
+                msg_size = struct.unpack(PAYLOAD_SIZE_STRUCT_FORMAT, packed_msg_size)[0]
 
                 while len(data) < msg_size:
-                    data += client_socket.recv(4096)
+                    data += client_socket.recv(RECEIVE_BUFFER_SIZE)
 
                 # Frame data and username are being transmitted together, so we split them
                 frame_data = data[:msg_size]
@@ -73,13 +78,13 @@ class StreamingServer:
                 username = username_data.decode('utf-8').rstrip('\x00')
 
                 frame = pickle.loads(frame_data, fix_imports=True, encoding="bytes")
-                frame = cv2.imdecode(frame, cv2.IMREAD_COLOR)
+                frame = cv2.imdecode(frame, FRAME_DECODE_COLOR_MODE)
 
                 # Display the frame
                 window_title = f"Stream - {username}"
                 cv2.imshow(window_title, frame)
 
-                if cv2.waitKey(1) & 0xFF == ord('q'):
+                if cv2.waitKey(KEY_PRESS_CHECK_DELAY) & 0xFF == EXIT_KEY:
                     break
             except ConnectionResetError:
                 break

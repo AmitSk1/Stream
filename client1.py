@@ -5,6 +5,9 @@ import pickle
 import threading
 import numpy as np
 import pyautogui
+from constants import FPS, RESOLUTION_VERTICAL, RESOLUTION_HORIZONTAL, CAPTURE_DEVICE_INDEX, \
+    JPEG_COMPRESSION_QUALITY, \
+    PICKLE_PROTOCOL_VERSION, WAIT_TIME_PER_FRAME
 
 
 class StreamingClient:
@@ -12,7 +15,7 @@ class StreamingClient:
     A client for streaming video data to a server.
     """
 
-    def __init__(self, host, port, resolution=(640, 360), fps=15):
+    def __init__(self, host, port, resolution=(RESOLUTION_VERTICAL, RESOLUTION_HORIZONTAL), fps=FPS):
         """
         Initializes the StreamingClient with the server address, resolution, and fps.
         """
@@ -22,7 +25,7 @@ class StreamingClient:
         self.fps = fps
         self.running = False
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.camera = cv2.VideoCapture(0)  # Initialize the camera capture
+        self.camera = cv2.VideoCapture(CAPTURE_DEVICE_INDEX)  # Initialize the camera capture
         self.username = None  # To store the username
 
     def connect_to_server(self):
@@ -69,8 +72,8 @@ class StreamingClient:
             combined_frame = np.hstack((cam_frame, screen_np))
 
             # Compress the combined frame before sending
-            result, encoded_frame = cv2.imencode('.jpg', combined_frame, [cv2.IMWRITE_JPEG_QUALITY, 50])
-            data = pickle.dumps(encoded_frame, protocol=4)
+            result, encoded_frame = cv2.imencode('.jpg', combined_frame, [cv2.IMWRITE_JPEG_QUALITY, JPEG_COMPRESSION_QUALITY])
+            data = pickle.dumps(encoded_frame, protocol=PICKLE_PROTOCOL_VERSION)
             size = len(data)
 
             try:
@@ -80,7 +83,7 @@ class StreamingClient:
                 print(f"Connection closed: {e}")
                 break
 
-            cv2.waitKey(int(1000 / self.fps))  # Control the frame rate based on FPS
+            cv2.waitKey(WAIT_TIME_PER_FRAME)  # Control the frame rate based on FPS
 
         self.stop_stream()
 
