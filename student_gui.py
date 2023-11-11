@@ -1,3 +1,7 @@
+"""
+student_gui
+Amit Skarbin
+"""
 from tkinter import Tk, StringVar, Label, Entry, Button, messagebox, Toplevel
 from client1 import StreamingClient
 
@@ -14,7 +18,8 @@ class ClientGUI:
         self.client = StreamingClient(host, port)
         self.window = Tk()
         self.window.title("Student GUI")
-        self.username_var = StringVar()  # Initialize the StringVar for username
+        # Initialize the StringVar for username
+        self.username_var = StringVar()
         self.setup_gui()
 
     def setup_gui(self):
@@ -26,7 +31,8 @@ class ClientGUI:
         self.entry = Entry(self.window, textvariable=self.username_var)
         self.entry.pack()
 
-        self.button = Button(self.window, text="Start Streaming", command=self.start_streaming)
+        self.button = Button(self.window, text="Start Streaming",
+                             command=self.start_streaming)
         self.button.pack()
 
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -56,7 +62,8 @@ class ClientGUI:
         self.control_window = Toplevel(self.window)
         self.control_window.title("Streaming Control")
         Label(self.control_window, text="Streaming is running...").pack()
-        stop_button = Button(self.control_window, text="Finish Test", command=self.finish_test)
+        stop_button = Button(self.control_window, text="Finish Test",
+                             command=self.finish_test)
         stop_button.pack()
 
     def run(self):

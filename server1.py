@@ -1,11 +1,17 @@
+"""
+server
+Amit Skarbin
+"""
 import socket
 import threading
 import struct
 import pickle
 import cv2
 
-from constants import PAYLOAD_SIZE_STRUCT_FORMAT, RECEIVE_BUFFER_SIZE, \
+from constants import (
+    PAYLOAD_SIZE_STRUCT_FORMAT, RECEIVE_BUFFER_SIZE,
     FRAME_DECODE_COLOR_MODE, KEY_PRESS_CHECK_DELAY, EXIT_KEY
+)
 
 
 class StreamingServer:
@@ -35,12 +41,13 @@ class StreamingServer:
         accept_thread.start()
 
     def accept_connections(self):
-        """Accepts incoming client connections and starts a handler for each."""
+        """Accepts incoming client connections and starts a handler for each"""
         while self.running:
             try:
                 client_socket, client_address = self.server_socket.accept()
-                print(f"Connection from {client_address} has been established.")
-                client_thread = threading.Thread(target=self.client_handler, args=(client_socket,))
+                print(f"Connection from {client_address} has been established")
+                client_thread = threading.Thread(target=self.client_handler,
+                                                 args=(client_socket,))
                 client_thread.start()
             except Exception as e:
                 print(f"Error accepting connections: {e}")
@@ -55,41 +62,39 @@ class StreamingServer:
                 data = b""
                 while len(data) < payload_size:
                     packet = client_socket.recv(RECEIVE_BUFFER_SIZE)
-                    if not packet: break
+                    if not packet:
+                        break
                     data += packet
-                if data == b"": break
+                if data == b"":
+                    break
 
                 packed_msg_size = data[:payload_size]
                 data = data[payload_size:]
-                msg_size = struct.unpack(PAYLOAD_SIZE_STRUCT_FORMAT, packed_msg_size)[0]
+                msg_size = struct.unpack(PAYLOAD_SIZE_STRUCT_FORMAT,
+                                         packed_msg_size)[0]
 
                 while len(data) < msg_size:
                     data += client_socket.recv(RECEIVE_BUFFER_SIZE)
 
-                # Frame data and username are being transmitted together, so we split them
                 frame_data = data[:msg_size]
-                username_data = data[msg_size:]
-                data = b""
+                data = data[msg_size:]
 
-                # Extract username; assume that it's at the end of the transmission
-                username = username_data.decode('utf-8').rstrip('\x00')
-                frame = pickle.loads(frame_data, fix_imports=True, encoding="bytes")
+                frame = pickle.loads(frame_data)
                 frame = cv2.imdecode(frame, FRAME_DECODE_COLOR_MODE)
 
-                # Display the frame
-                window_title = f"Stream - {username}"
-                cv2.imshow(window_title, frame)
-
-                if cv2.waitKey(KEY_PRESS_CHECK_DELAY) & 0xFF == EXIT_KEY:
+                cv2.imshow('Server', frame)
+                if cv2.waitKey(KEY_PRESS_CHECK_DELAY) == EXIT_KEY:
                     break
-            except ConnectionResetError:
+            except Exception as e:
+                print(f"Error handling client: {e}")
                 break
 
         client_socket.close()
-        print(f"Client disconnected")
 
     def stop_server(self):
-        """Stops the server and releases all resources."""
+        """
+        Stops the server and closes all connections.
+        """
         self.running = False
         self.server_socket.close()
         cv2.destroyAllWindows()

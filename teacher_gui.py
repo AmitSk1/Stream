@@ -1,6 +1,9 @@
+"""
+teacher_gui
+Amit Skarbin
+"""
 import threading
 from tkinter import Tk, Button, messagebox
-
 from server1 import StreamingServer
 
 
@@ -20,7 +23,8 @@ class ServerGUI:
 
     def setup_gui(self):
         """Sets up the GUI  for the server control."""
-        Button(self.window, text="Start Server", command=self.start_server).pack()
+        Button(self.window, text="Start Server",
+               command=self.start_server).pack()
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
     def start_server(self):
@@ -29,7 +33,8 @@ class ServerGUI:
 
     def on_closing(self):
         """Handles the GUI window closing event."""
-        if messagebox.askokcancel("Quit", "Do you want to shut down the server?"):
+        if messagebox.askokcancel(
+                "Quit", "Do you want to shut down the server?"):
             self.server.stop_server()
             self.window.destroy()
 
