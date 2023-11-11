@@ -4,12 +4,9 @@ import struct
 import pickle
 import cv2
 
-# Constants
-PAYLOAD_SIZE_STRUCT_FORMAT = '>L'  # Format for struct packing of payload size
-RECEIVE_BUFFER_SIZE = 4096  # Buffer size for receiving data
-FRAME_DECODE_COLOR_MODE = cv2.IMREAD_COLOR  # Color mode for frame decoding
-KEY_PRESS_CHECK_DELAY = 1  # Delay for checking key press in milliseconds
-EXIT_KEY = ord('q')  # Key to press for exiting frame display
+from constants import PAYLOAD_SIZE_STRUCT_FORMAT, RECEIVE_BUFFER_SIZE, \
+    FRAME_DECODE_COLOR_MODE, KEY_PRESS_CHECK_DELAY, EXIT_KEY
+
 
 class StreamingServer:
     """
@@ -76,7 +73,6 @@ class StreamingServer:
 
                 # Extract username; assume that it's at the end of the transmission
                 username = username_data.decode('utf-8').rstrip('\x00')
-
                 frame = pickle.loads(frame_data, fix_imports=True, encoding="bytes")
                 frame = cv2.imdecode(frame, FRAME_DECODE_COLOR_MODE)
 

@@ -38,16 +38,16 @@ class ClientGUI:
             self.client.start_stream(username)
             self.create_control_window()
 
-    def finish_test(self):
-        """Stops the streaming process."""
-        self.client.stop_client()
-        self.on_closing()
-
     def on_closing(self):
         """Handles the GUI window closing event."""
         if messagebox.askokcancel("Quit", "Do you want to exit?"):
             self.client.stop_client()
             self.window.destroy()
+
+    def finish_test(self):
+        """Stops the streaming process."""
+        self.client.stop_client()
+        self.window.destroy()
 
     def create_control_window(self):
         """
