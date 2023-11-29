@@ -3,7 +3,7 @@ teacher_gui
 Amit Skarbin
 """
 import threading
-from tkinter import Tk, Button, messagebox
+from tkinter import Tk, Button, messagebox, Label
 from server1 import StreamingServer
 
 
@@ -23,8 +23,9 @@ class ServerGUI:
 
     def setup_gui(self):
         """Sets up the GUI  for the server control."""
-        Button(self.window, text="Start Server",
-               command=self.start_server).pack()
+        self.start_server()
+        self.label = Label(self.window, text="Waiting for students to connect")
+        self.label.pack()
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
     def start_server(self):
