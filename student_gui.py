@@ -72,5 +72,5 @@ class ClientGUI:
 
 
 if __name__ == "__main__":
-    gui = ClientGUI('127.0.0.1', 1254)
+    gui = ClientGUI('10.20.73.179', 1254)
     gui.run()
