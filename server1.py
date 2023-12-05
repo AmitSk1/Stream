@@ -5,6 +5,7 @@ import threading
 import struct
 import pickle
 
+
 class StreamingServer:
     def __init__(self, host, port):
         self.host = host
@@ -36,13 +37,21 @@ class StreamingServer:
             packed_msg_size = data[:payload_size]
             data = data[payload_size:]
             msg_size = struct.unpack(">L", packed_msg_size)[0]
+
             while len(data) < msg_size:
                 data += client_socket.recv(4096)
-            frame_data = data[:msg_size]
-            frame = pickle.loads(frame_data)
-            client_id = client_socket.getpeername()  # Using client's address as ID
-            with self.lock:
-                self.frames[client_id] = frame
+
+            try:
+                username_size = struct.unpack(">L", data[-4:])[0]
+                username = data[-(4 + username_size):-4].decode()
+                frame_data = data[:-4 - username_size]
+
+                frame = pickle.loads(frame_data)
+                with self.lock:
+                    self.frames[username] = frame
+            except UnicodeDecodeError as e:
+                print(f"Error decoding username: {e}")
+                # Handle the error or log it
 
     def update_combined_frame(self):
         while self.running:
@@ -62,7 +71,7 @@ class StreamingServer:
         for idx, frame in enumerate(frames):
             x = (idx % grid_size) * frame_width
             y = (idx // grid_size) * frame_height
-            combined_frame[y:y+frame_height, x:x+frame_width, :] = frame
+            combined_frame[y:y + frame_height, x:x + frame_width, :] = frame
         return combined_frame
 
     def stop_server(self):
