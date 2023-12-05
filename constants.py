@@ -1,6 +1,7 @@
 """
 Constants
 Amit Skarbin
+fuck this shit
 """
 import cv2
 
