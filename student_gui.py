@@ -3,7 +3,7 @@
 student_gui
 Amit Skarbin
 """
-from tkinter import Tk, StringVar, Label, Entry, Button, messagebox, Toplevel
+from tkinter import Tk, StringVar, Label, Entry, Button, messagebox, Toplevel,Frame
 from client1 import StreamingClient
 
 
@@ -26,17 +26,18 @@ class ClientGUI:
     def setup_gui(self):
         """Sets up the GUI components for the client."""
         self.client.connect_to_server()
-        self.label = Label(self.window, text="Enter your name:")
-        self.label.pack()
+        main_frame = Frame(self.window)
+        main_frame.pack(padx=10, pady=10)
 
-        self.entry = Entry(self.window, textvariable=self.username_var)
-        self.entry.pack()
+        Label(main_frame, text="Enter your name:").grid(row=0, column=0, sticky='w')
+        Entry(main_frame, textvariable=self.username_var).grid(row=0, column=1, sticky='ew')
+        Button(main_frame, text="Start Streaming", command=self.start_streaming).grid(row=1, column=0, columnspan=2,
+                                                                                      pady=5)
 
-        self.button = Button(self.window, text="Start Streaming",
-                             command=self.start_streaming)
-        self.button.pack()
+        main_frame.grid_columnconfigure(1, weight=1)
 
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
+
 
     def start_streaming(self):
         """Starts the streaming process with the entered username."""
@@ -73,5 +74,5 @@ class ClientGUI:
 
 
 if __name__ == "__main__":
-    gui = ClientGUI('127.0.0.1', 1254)
+    gui = ClientGUI('127.0.0.1', 8000)
     gui.run()

@@ -40,6 +40,7 @@ class StreamingClient:
     def connect_to_server(self):
         """Establishes the socket connection with the server."""
         self.client_socket.connect((self.host, self.port))
+        print("client connection")
 
     def start_stream(self, username):
         """

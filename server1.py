@@ -1,62 +1,35 @@
-
-"""
-server
-Amit Skarbin
-"""
 import socket
 import threading
 import struct
 import pickle
 import cv2
-
 from constants import (
     PAYLOAD_SIZE_STRUCT_FORMAT, RECEIVE_BUFFER_SIZE,
     FRAME_DECODE_COLOR_MODE, KEY_PRESS_CHECK_DELAY, EXIT_KEY
 )
 
-
 class StreamingServer:
-    """
-    A server for handling incoming video streams from multiple clients.
-    """
-
-    def __init__(self, host, port):
-        """
-        Initializes the StreamingServer with the server address.
-        """
+    def __init__(self, host, port, new_frame_callback=None):
         self.host = host
         self.port = port
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.bind((self.host, self.port))
-        self.clients = {}
-        self.client_info = {}  # To store the username for each client
-        self.lock = threading.Lock()
+        self.new_frame_callback = new_frame_callback
         self.running = False
 
     def start_server(self):
-        """Starts the server to listen for incoming connections."""
         self.server_socket.listen()
         self.running = True
-        print(f"Server started at {self.host}:{self.port}")
         accept_thread = threading.Thread(target=self.accept_connections)
         accept_thread.start()
 
     def accept_connections(self):
-        """Accepts incoming client connections and starts a handler for each"""
         while self.running:
-            try:
-                client_socket, client_address = self.server_socket.accept()
-                print(f"Connection from {client_address} has been established")
-                client_thread = threading.Thread(target=self.client_handler,
-                                                 args=(client_socket,))
-                client_thread.start()
-            except Exception as e:
-                print(f"Error accepting connections: {e}")
+            client_socket, client_address = self.server_socket.accept()
+            client_thread = threading.Thread(target=self.client_handler, args=(client_socket, client_address))
+            client_thread.start()
 
-    def client_handler(self, client_socket):
-        """
-        Handles the communication with a connected client.
-        """
+    def client_handler(self, client_socket, client_address):
         payload_size = struct.calcsize(PAYLOAD_SIZE_STRUCT_FORMAT)
         while self.running:
             try:
@@ -66,26 +39,21 @@ class StreamingServer:
                     if not packet:
                         break
                     data += packet
-                if data == b"":
-                    break
 
                 packed_msg_size = data[:payload_size]
                 data = data[payload_size:]
-                msg_size = struct.unpack(PAYLOAD_SIZE_STRUCT_FORMAT,
-                                         packed_msg_size)[0]
+                msg_size = struct.unpack(PAYLOAD_SIZE_STRUCT_FORMAT, packed_msg_size)[0]
 
                 while len(data) < msg_size:
                     data += client_socket.recv(RECEIVE_BUFFER_SIZE)
 
                 frame_data = data[:msg_size]
-                data = data[msg_size:]
-
                 frame = pickle.loads(frame_data)
                 frame = cv2.imdecode(frame, FRAME_DECODE_COLOR_MODE)
 
-                cv2.imshow('Server', frame)
-                if cv2.waitKey(KEY_PRESS_CHECK_DELAY) == EXIT_KEY:
-                    break
+                if self.new_frame_callback:
+                    self.new_frame_callback(client_address, frame)
+
             except Exception as e:
                 print(f"Error handling client: {e}")
                 break
@@ -93,10 +61,6 @@ class StreamingServer:
         client_socket.close()
 
     def stop_server(self):
-        """
-        Stops the server and closes all connections.
-        """
         self.running = False
         self.server_socket.close()
         cv2.destroyAllWindows()
-        print("Server stopped.")
