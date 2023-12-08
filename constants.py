@@ -1,3 +1,4 @@
+
 """
 Constants
 Amit Skarbin
@@ -5,11 +6,11 @@ Amit Skarbin
 import cv2
 
 # Constants for the client
-FPS = 15
-RESOLUTION_VERTICAL = 320
-RESOLUTION_HORIZONTAL = 180
+FPS = 10
+RESOLUTION_VERTICAL = 640
+RESOLUTION_HORIZONTAL = 360
 CAPTURE_DEVICE_INDEX = 0  # Index of the camera capture device
-JPEG_COMPRESSION_QUALITY = 30  # Compression quality for JPEG images
+JPEG_COMPRESSION_QUALITY = 50  # Compression quality for JPEG images
 PICKLE_PROTOCOL_VERSION = 4  # Protocol version for pickle
 # Time to wait between frames, calculated from FPS
 WAIT_TIME_PER_FRAME = int(1000 / FPS)
