@@ -33,17 +33,20 @@ class StreamingServer:
         payload_size = struct.calcsize(PAYLOAD_SIZE_STRUCT_FORMAT)
         while self.running:
             try:
+                # Receive the data from the client
                 data = b""
                 while len(data) < payload_size:
                     packet = client_socket.recv(RECEIVE_BUFFER_SIZE)
-                    if not packet:
-                        break
+                    if not packet:  # Client has disconnected
+                        raise ConnectionError("Client disconnected")
                     data += packet
 
+                # Retrieve the size of the incoming frame data
                 packed_msg_size = data[:payload_size]
                 data = data[payload_size:]
                 msg_size = struct.unpack(PAYLOAD_SIZE_STRUCT_FORMAT, packed_msg_size)[0]
 
+                # Receive the frame data based on the retrieved size
                 while len(data) < msg_size:
                     data += client_socket.recv(RECEIVE_BUFFER_SIZE)
 
@@ -51,14 +54,22 @@ class StreamingServer:
                 frame = pickle.loads(frame_data)
                 frame = cv2.imdecode(frame, FRAME_DECODE_COLOR_MODE)
 
+                # Send the frame to the GUI for display
                 if self.new_frame_callback:
                     self.new_frame_callback(client_address, frame)
 
+            except ConnectionError as e:
+                print(f"Client {client_address} disconnected: {e}")
+                break
             except Exception as e:
-                print(f"Error handling client: {e}")
+                print(f"Error handling client {client_address}: {e}")
                 break
 
+        # Clean up the connection
         client_socket.close()
+        # Notify the GUI that the client has disconnected
+        if self.new_frame_callback:
+            self.new_frame_callback(client_address, None)
 
     def stop_server(self):
         self.running = False
