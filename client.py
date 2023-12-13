@@ -10,7 +10,7 @@ import pickle
 import threading
 import numpy as np
 import pyautogui
-from constants import (
+from CONSTANTS.constants import (
     FPS, RESOLUTION_VERTICAL, RESOLUTION_HORIZONTAL, CAPTURE_DEVICE_INDEX,
     JPEG_COMPRESSION_QUALITY, PICKLE_PROTOCOL_VERSION, WAIT_TIME_PER_FRAME
 )

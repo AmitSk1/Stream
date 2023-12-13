@@ -4,7 +4,7 @@ student_gui
 Amit Skarbin
 """
 from tkinter import Tk, StringVar, Label, Entry, Button, messagebox, Toplevel,Frame
-from client1 import StreamingClient
+from client import StreamingClient
 
 
 class ClientGUI:
@@ -74,5 +74,5 @@ class ClientGUI:
 
 
 if __name__ == "__main__":
-    gui = ClientGUI('192.168.68.111', 4567)
+    gui = ClientGUI('192.168.68.111', 4532)
     gui.run()

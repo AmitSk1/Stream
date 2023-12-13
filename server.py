@@ -3,9 +3,9 @@ import threading
 import struct
 import pickle
 import cv2
-from constants import (
+from CONSTANTS.constants import (
     PAYLOAD_SIZE_STRUCT_FORMAT, RECEIVE_BUFFER_SIZE,
-    FRAME_DECODE_COLOR_MODE, KEY_PRESS_CHECK_DELAY, EXIT_KEY
+    FRAME_DECODE_COLOR_MODE
 )
 
 class StreamingServer:

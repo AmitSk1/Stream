@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import Frame, Label, messagebox
 from PIL import Image, ImageTk
 import math
-from server1 import StreamingServer  # Make sure this import matches your project structure
+from server import StreamingServer  # Make sure this import matches your project structure
 import cv2
 
 
@@ -118,5 +118,5 @@ class ServerGUI:
 
 
 if __name__ == "__main__":
-    gui = ServerGUI('192.168.68.111', 4567)
+    gui = ServerGUI('192.168.68.111', 4532)
     gui.run()
