@@ -8,13 +8,14 @@ import cv2
 
 
 class ServerGUI:
-    def __init__(self, host, port, resolution=(640, 480)):  # Example resolution (width x height)
+    def __init__(self, host, port, resolution=(640, 480)):
         self.server = StreamingServer(host, port, self.new_frame_received)
         self.window = tk.Tk()
         self.window.title("Teacher's Dashboard")
         self.resolution = resolution
-        self.aspect_ratio = resolution[1] / resolution[0]
+        self.aspect_ratio = resolution[1] / resolution[0]  # Height divided by width
         self.student_frames = {}
+        self.student_images = {}  # To keep a reference to the images
         self.setup_gui()
 
 
@@ -48,29 +49,37 @@ class ServerGUI:
         self.update_layout()
 
     def new_frame_received(self, client_address, frame):
-        student_id = f"{client_address[0]}:{client_address[1]}"
-        if student_id not in self.student_frames:
-            self.add_student_stream(student_id)
-        self.update_video_display(student_id, frame)
-        self.update_layout()
+        # This method will be called from a separate thread
+        # Use 'after' to schedule GUI updates on the main thread
+        self.window.after(0, self.update_video_display, client_address, frame)
 
     def remove_student_stream(self, student_id):
-        if student_id in self.student_frames:
-            frame_label = self.student_frames[student_id]
-            frame_label.grid_forget()  # Remove the frame from the grid
-            frame_label.destroy()  # Destroy the frame widget
-            del self.student_frames[student_id]  # Remove the reference
-            self.update_layout()  # Update the layout since a stream was removed
+        # This method will be called from a separate thread
+        # Use 'after' to schedule GUI updates on the main thread
+        self.window.after(0, self._remove_student_stream, student_id)
 
-    def update_video_display(self, student_id, frame):
+    def _remove_student_stream(self, student_id):
+        # This method actually updates the GUI, so it must be run on the main thread
+        frame_label = self.student_frames.get(student_id)
+        if frame_label is not None:
+            frame_label.grid_forget()  # Remove the frame from the grid
+            frame_label.destroy()  # Destroy the widget
+            del self.student_frames[student_id]  # Remove the reference from the dictionary
+            del self.student_images[student_id]  # Remove the stored image reference
+            self.update_layout()  # Update the layout to reflect the change
+    def update_video_display(self, client_address, frame):
+        student_id = f"{client_address[0]}:{client_address[1]}"
         if frame is not None:
+            # Convert the frame to a format that Tkinter can use and update the display
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frame_image = Image.fromarray(frame)
             frame_photo = ImageTk.PhotoImage(image=frame_image)
+            if student_id not in self.student_frames:
+                self.add_student_stream(student_id)
             self.student_frames[student_id].configure(image=frame_photo)
             self.student_frames[student_id].image = frame_photo  # Keep a reference
         else:
-            # Handle the case where the client has disconnected
+            # If frame is None, it means the client has disconnected
             self.remove_student_stream(student_id)
 
     def update_layout(self):

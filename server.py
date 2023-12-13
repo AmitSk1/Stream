@@ -51,12 +51,16 @@ class StreamingServer:
                     data += client_socket.recv(RECEIVE_BUFFER_SIZE)
 
                 frame_data = data[:msg_size]
-                frame = pickle.loads(frame_data)
-                frame = cv2.imdecode(frame, FRAME_DECODE_COLOR_MODE)
 
-                # Send the frame to the GUI for display
-                if self.new_frame_callback:
-                    self.new_frame_callback(client_address, frame)
+                # Decoding the frame should be in a try-except block to handle corrupt data
+                try:
+                    frame = pickle.loads(frame_data)
+                    frame = cv2.imdecode(frame, FRAME_DECODE_COLOR_MODE)
+                    if frame is not None:
+                        # Use a thread-safe method to update the GUI
+                        self.new_frame_callback(client_address, frame)
+                except Exception as e:
+                    print(f"Error decoding frame from client {client_address}: {e}")
 
             except ConnectionError as e:
                 print(f"Client {client_address} disconnected: {e}")
