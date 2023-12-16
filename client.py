@@ -10,7 +10,7 @@ import pickle
 import threading
 import numpy as np
 import pyautogui
-from CONSTANTS.constants import (
+from constants import (
     FPS, RESOLUTION_VERTICAL, RESOLUTION_HORIZONTAL, CAPTURE_DEVICE_INDEX,
     JPEG_COMPRESSION_QUALITY, PICKLE_PROTOCOL_VERSION, WAIT_TIME_PER_FRAME
 )
@@ -18,7 +18,7 @@ from CONSTANTS.constants import (
 
 class StreamingClient:
     """
-    A client for streaming video data to a server.
+    A client class for streaming video data to a server.
     """
 
     def __init__(self, host, port, resolution=(
@@ -86,7 +86,8 @@ class StreamingClient:
             result, encoded_frame = cv2.imencode('.jpg', combined_frame,
                                                  [cv2.IMWRITE_JPEG_QUALITY,
                                                   JPEG_COMPRESSION_QUALITY])
-            data = pickle.dumps(encoded_frame,
+            frame_and_username = (encoded_frame, self.username)
+            data = pickle.dumps(frame_and_username,
                                 protocol=PICKLE_PROTOCOL_VERSION)
             size = len(data)
 
@@ -109,7 +110,6 @@ class StreamingClient:
         if self.running:
             print("Stopping the client...")
             self.stop_stream()  # Stop the streaming thread
-            # Additional cleanup if necessary
             print("Client stopped.")
         else:
             print("Client is not running.")
