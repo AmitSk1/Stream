@@ -7,8 +7,8 @@ import cv2
 
 # Constants for the client
 FPS = 10
-RESOLUTION_VERTICAL = 640
-RESOLUTION_HORIZONTAL = 360
+RESOLUTION_VERTICAL = 320
+RESOLUTION_HORIZONTAL = 240
 CAPTURE_DEVICE_INDEX = 0  # Index of the camera capture device
 JPEG_COMPRESSION_QUALITY = 50  # Compression quality for JPEG images
 PICKLE_PROTOCOL_VERSION = 4  # Protocol version for pickle

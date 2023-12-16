@@ -52,21 +52,14 @@ class ServerGUI:
         # This method will be called from a separate thread
         # Use 'after' to schedule GUI updates on the main thread
         self.window.after(0, self.update_video_display, client_address, frame)
-
     def remove_student_stream(self, student_id):
-        # This method will be called from a separate thread
-        # Use 'after' to schedule GUI updates on the main thread
-        self.window.after(0, self._remove_student_stream, student_id)
-
-    def _remove_student_stream(self, student_id):
-        # This method actually updates the GUI, so it must be run on the main thread
-        frame_label = self.student_frames.get(student_id)
-        if frame_label is not None:
+        if student_id in self.student_frames:
+            frame_label = self.student_frames[student_id]
             frame_label.grid_forget()  # Remove the frame from the grid
-            frame_label.destroy()  # Destroy the widget
-            del self.student_frames[student_id]  # Remove the reference from the dictionary
-            del self.student_images[student_id]  # Remove the stored image reference
-            self.update_layout()  # Update the layout to reflect the change
+            frame_label.destroy()  # Destroy the frame widget
+            del self.student_frames[student_id]  # Remove the reference
+            self.update_layout()  # Update the layout since a stream was removed
+
     def update_video_display(self, client_address, frame):
         student_id = f"{client_address[0]}:{client_address[1]}"
         if frame is not None:
@@ -91,34 +84,28 @@ class ServerGUI:
         window_width = self.streams_frame.winfo_width()
         window_height = self.streams_frame.winfo_height()
 
-        # Calculate the appropriate number of columns and rows
-        cols = min(5, num_students)  # Set the maximum number of columns
+        # Calculate the number of columns and rows for the grid layout
+        # We aim to create a grid that fills the screen both vertically and horizontally
+        cols = int(math.sqrt(num_students))
         rows = math.ceil(num_students / cols)
 
         # Calculate the size of each frame
         frame_width = window_width // cols
-        frame_height = int(frame_width * self.aspect_ratio)  # Maintain the aspect ratio
-
-        # Check if the total height exceeds the window height and adjust if necessary
-        total_height = frame_height * rows
-        if total_height > window_height:
-            frame_height = window_height // rows
-            frame_width = int(frame_height / self.aspect_ratio)
+        frame_height = window_height // rows
 
         # Update the size and position of each frame
-        for i, (student_id, frame_label) in enumerate(self.student_frames.items()):
+        for i, (student_id, frame_label) in enumerate(sorted(self.student_frames.items())):
             row = i // cols
             col = i % cols
             frame_label.grid(row=row, column=col, sticky='nsew')
+            frame_label.grid_propagate(False)
+            frame_label.config(width=frame_width, height=frame_height)
 
-            # Remove any previous photo images to avoid holding onto deleted references
-            frame_label.image = None
-
-        # Adjust the configuration of each grid cell
+        # Adjust the configuration of each grid cell to give them equal weight
         for r in range(rows):
-            self.streams_frame.grid_rowconfigure(r, weight=1)
+            self.streams_frame.grid_rowconfigure(r, weight=1, uniform="frame")
         for c in range(cols):
-            self.streams_frame.grid_columnconfigure(c, weight=1)
+            self.streams_frame.grid_columnconfigure(c, weight=1, uniform="frame")
     def calculate_grid_dimensions(self, num_students):
         cols = min(5, math.ceil(math.sqrt(num_students)))  # Limit the number of columns to a maximum of 5
         rows = math.ceil(num_students / cols)
