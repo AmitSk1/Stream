@@ -6,7 +6,7 @@ Amit Skarbin
 import cv2
 
 # Constants for the client
-FPS = 10
+FPS = 20
 RESOLUTION_VERTICAL = 320
 RESOLUTION_HORIZONTAL = 240
 CAPTURE_DEVICE_INDEX = 0  # Index of the camera capture device

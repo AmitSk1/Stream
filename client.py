@@ -14,7 +14,7 @@ from constants import (
     FPS, RESOLUTION_VERTICAL, RESOLUTION_HORIZONTAL, CAPTURE_DEVICE_INDEX,
     JPEG_COMPRESSION_QUALITY, PICKLE_PROTOCOL_VERSION, WAIT_TIME_PER_FRAME
 )
-
+import protocol
 
 class StreamingClient:
     """
@@ -59,49 +59,52 @@ class StreamingClient:
         self.camera.release()  # Release the camera
         self.client_socket.close()
 
+
     def stream_video(self):
-        """
-        Captures video frames and sends them to the server.
-        """
         while self.running:
-            # Capture screen
-            screen = pyautogui.screenshot()
-            screen_np = np.array(screen)
-            screen_np = cv2.cvtColor(screen_np, cv2.COLOR_BGR2RGB)
-            # Resize screen capture
-            screen_np = cv2.resize(screen_np, self.resolution)
-
-            # Capture camera frame
-            ret, cam_frame = self.camera.read()
-            if not ret:
-                print("Failed to grab frame from camera. Exiting...")
+            screen_np = self.capture_screen()
+            cam_frame = self.capture_camera_frame()
+            if cam_frame is None:
                 break
-            # Resize camera capture
-            cam_frame = cv2.resize(cam_frame, self.resolution)
 
-            # Combine screen capture and camera frame side by side
-            combined_frame = np.hstack((cam_frame, screen_np))
-
-            # Compress the combined frame before sending
-            result, encoded_frame = cv2.imencode('.jpg', combined_frame,
-                                                 [cv2.IMWRITE_JPEG_QUALITY,
-                                                  JPEG_COMPRESSION_QUALITY])
-            frame_and_username = (encoded_frame, self.username)
-            data = pickle.dumps(frame_and_username,
-                                protocol=PICKLE_PROTOCOL_VERSION)
-            size = len(data)
-
-            try:
-                # Send username with the frame
-                self.client_socket.sendall(struct.pack('>L', size) +
-                                           data + self.username.encode())
-            except Exception as e:
-                print(f"Connection closed: {e}")
+            combined_frame = self.combine_frames(screen_np, cam_frame)
+            if not self.send_frame(combined_frame):
                 break
-            # Control the frame rate based on FPS
-            cv2.waitKey(WAIT_TIME_PER_FRAME)
 
         self.stop_stream()
+
+    def capture_screen(self):
+        screen = pyautogui.screenshot()
+        screen_np = np.array(screen)
+        screen_np = cv2.cvtColor(screen_np, cv2.COLOR_BGR2RGB)
+        # Resize screen capture
+        return cv2.resize(screen_np, self.resolution)
+
+    def capture_camera_frame(self):
+        ret, cam_frame = self.camera.read()
+        if not ret:
+            print("Failed to grab frame from camera. Exiting...")
+            return None
+        return cv2.resize(cam_frame, self.resolution)
+
+    def combine_frames(self, screen_np, cam_frame):
+        return np.hstack((cam_frame, screen_np))
+
+    def send_frame(self, frame):
+        result, encoded_frame = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, JPEG_COMPRESSION_QUALITY])
+        if not result:
+            return False
+
+        frame_and_username = (encoded_frame, self.username)
+        data = pickle.dumps(frame_and_username, protocol=PICKLE_PROTOCOL_VERSION)
+
+        try:
+            protocol.send_bin(self.client_socket, data)
+            return True
+        except Exception as e:
+            print(f"Connection closed: {e}")
+            return False
+
 
     def stop_client(self):
         """

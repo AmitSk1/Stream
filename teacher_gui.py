@@ -1,3 +1,4 @@
+
 import threading
 import tkinter as tk
 from tkinter import Frame, Label, messagebox
@@ -196,5 +197,5 @@ class ServerGUI:
 
 
 if __name__ == "__main__":
-    gui = ServerGUI('192.168.68.111', 4532)
+    gui = ServerGUI('192.168.68.106', 4532)
     gui.run()

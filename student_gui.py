@@ -1,3 +1,4 @@
+
 """
 student_gui
 Amit Skarbin
@@ -77,5 +78,5 @@ class ClientGUI:
 
 
 if __name__ == "__main__":
-    gui = ClientGUI('192.168.68.111', 4532)
+    gui = ClientGUI('192.168.68.106', 4532)
     gui.run()
