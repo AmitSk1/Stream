@@ -1,8 +1,6 @@
 import os
 
-import client
-import file_protocol
-import protocol
+from Protocols import file_protocol, protocol
 
 
 class ClientFileManagementModule:

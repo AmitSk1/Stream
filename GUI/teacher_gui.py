@@ -5,7 +5,7 @@ import tkinter as tk
 from tkinter import Frame, Label, messagebox, Button, filedialog, Toplevel
 from PIL import Image, ImageTk
 import math
-from server import StreamingServer
+from Server_Modules.server import StreamingServer
 import cv2
 
 

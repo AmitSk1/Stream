@@ -1,5 +1,6 @@
 import os
-import file_protocol
+from Protocols import file_protocol
+
 
 class ServerFileManagementModule:
     def __init__(self):

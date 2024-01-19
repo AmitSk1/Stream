@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
 import pyautogui
-from constants import RESOLUTION_VERTICAL, RESOLUTION_HORIZONTAL, CAPTURE_DEVICE_INDEX, JPEG_COMPRESSION_QUALITY, PICKLE_PROTOCOL_VERSION
-import protocol
+from constants import RESOLUTION_VERTICAL, RESOLUTION_HORIZONTAL, CAPTURE_DEVICE_INDEX
+
 
 class ClientStreamingModule:
     def __init__(self, resolution=(RESOLUTION_VERTICAL, RESOLUTION_HORIZONTAL)):

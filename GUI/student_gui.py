@@ -6,7 +6,7 @@ import os
 from tkinter import Tk, StringVar, Label, \
     Entry, Button, messagebox, \
     Toplevel, Frame, filedialog
-from client import StreamingClient
+from Client_Modules.client import StreamingClient
 
 
 class ClientGUI:

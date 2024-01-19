@@ -1,19 +1,9 @@
-import os
 import socket
-import threading
-import struct
-import pickle
-import cv2
 
-import file_protocol
-import protocol
-from server_network_module import ServerNetworkModule
-from server_file_management_module import ServerFileManagementModule
-from serve_frame_processing_module import ServerFrameProcessingModule
-from constants import (
-    PAYLOAD_SIZE_STRUCT_FORMAT, RECEIVE_BUFFER_SIZE,
-    FRAME_DECODE_COLOR_MODE
-)
+from Protocols import file_protocol, protocol
+from Server_Modules.server_network_module import ServerNetworkModule
+from Server_Modules.server_file_management_module import ServerFileManagementModule
+from Server_Modules.serve_frame_processing_module import ServerFrameProcessingModule
 
 
 class StreamingServer:

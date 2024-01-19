@@ -1,7 +1,7 @@
 import threading
 
-from student_gui import ClientGUI
-from teacher_gui import ServerGUI
+from GUI.student_gui import ClientGUI
+from GUI.teacher_gui import ServerGUI
 
 if __name__ == "__main__":
     # Start the server

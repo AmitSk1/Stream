@@ -1,5 +1,5 @@
 import socket
-import protocol
+
 
 class ClientNetworkModule:
     def __init__(self, host, port):
