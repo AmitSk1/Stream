@@ -1,3 +1,7 @@
+"""
+Amit skarbin
+"""
+
 # Constants
 SIZE_TO_FILL = 15
 MIN_SIZE = 0

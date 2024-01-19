@@ -1,6 +1,6 @@
 """
 Server GUI
-Author: Amit Skarbin
+Amit Skarbin
 
 GUI for the teacher to monitor video streams from students.
 """

@@ -1,3 +1,8 @@
+"""
+Server for network communication
+Amit Skarbin
+"""
+
 import socket
 import threading
 

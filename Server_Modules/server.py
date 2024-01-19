@@ -1,3 +1,8 @@
+"""
+Server
+Amit Skarbin
+"""
+
 import socket
 
 from Protocols import file_protocol, protocol

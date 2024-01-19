@@ -1,3 +1,8 @@
+"""
+Server for frame processing
+Amit Skarbin
+"""
+
 import pickle
 import cv2
 from constants import FRAME_DECODE_COLOR_MODE

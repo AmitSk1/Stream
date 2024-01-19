@@ -1,3 +1,7 @@
+"""
+Amit skarbin
+"""
+
 import os
 import struct
 from constants import CHUNK_SIZE

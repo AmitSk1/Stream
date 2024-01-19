@@ -1,6 +1,6 @@
 """
 Client GUI
-Author: Amit Skarbin
+Amit Skarbin
 
 A GUI for the student client to enter their name and start streaming.
 """

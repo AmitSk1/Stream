@@ -1,3 +1,8 @@
+"""
+client for network
+Amit Skarbin
+"""
+
 import socket
 
 

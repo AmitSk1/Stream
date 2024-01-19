@@ -1,3 +1,8 @@
+"""
+client for streaming
+Amit Skarbin
+"""
+
 import cv2
 import numpy as np
 import pyautogui

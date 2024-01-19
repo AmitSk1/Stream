@@ -1,4 +1,10 @@
+"""
+Server for file management
+Amit Skarbin
+"""
+
 import os
+
 from Protocols import file_protocol
 
 

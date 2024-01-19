@@ -1,3 +1,8 @@
+"""
+Client
+Amit Skarbin
+"""
+
 import pickle
 import threading
 import cv2
