@@ -1,11 +1,11 @@
-
 """
 student_gui
 Amit Skarbin
 """
+import os
 from tkinter import Tk, StringVar, Label, \
     Entry, Button, messagebox, \
-    Toplevel, Frame
+    Toplevel, Frame, filedialog
 from client import StreamingClient
 
 
@@ -18,7 +18,7 @@ class ClientGUI:
         """
         Initializes the ClientGUI with a StreamingClient.
         """
-        self.client = StreamingClient(host, port)
+        self.client = StreamingClient(host, port)  # Updated initialization
         self.window = Tk()
         self.window.title("Student GUI")
         # Initialize the StringVar for username
@@ -27,7 +27,6 @@ class ClientGUI:
 
     def setup_gui(self):
         """Sets up the GUI components for the client."""
-        self.client.connect_to_server()
         main_frame = Frame(self.window)
         main_frame.pack(padx=10, pady=10)
 
@@ -40,6 +39,11 @@ class ClientGUI:
             row=1, column=0, columnspan=2, pady=5)
 
         main_frame.grid_columnconfigure(1, weight=1)
+        download_button = Button(self.window, text="Download File", command=self.download_file)
+        download_button.pack()
+
+        upload_button = Button(main_frame, text="Upload File", command=self.select_file_to_upload)
+        upload_button.grid(row=2, column=0, columnspan=2, pady=5)
 
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
@@ -71,6 +75,26 @@ class ClientGUI:
         stop_button = Button(self.control_window, text="Finish Test",
                              command=self.finish_test)
         stop_button.pack()
+
+    def select_file_to_upload(self):
+        """Opens a file dialog to select a file and uploads it."""
+        username = self.username_var.get()
+        file_path = filedialog.askopenfilename()
+        if file_path:
+            self.client.file_management_module.upload_file(file_path, username)
+
+    def download_file(self):
+        self.client.file_management_module.request_last_file()
+        # Define the directory and file path for the downloaded file
+        directory = "C:/testKeeper"
+        # Check if the directory exists, create it if not
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        # Receive the file from the server and save it to the specified path
+        self.client.file_management_module.receive_file_from_server(directory)
+        messagebox.showinfo("Download Complete", f"File saved to {directory}")
+        print("Download Complete", f"File saved to {directory}")
 
     def run(self):
         """Runs the main loop of the GUI."""

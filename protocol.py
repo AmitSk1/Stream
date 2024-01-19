@@ -1,5 +1,13 @@
-SIZE_TO_FILL = 5
+import os
+import struct
+
+import constants
+
+SIZE_TO_FILL = 15
 MIN_SIZE = 0
+CHUNK_SIZE = 4096  # Define a reasonable chunk size
+
+
 def send(socket, data):
     """
     send the files in chunk
@@ -17,7 +25,7 @@ def recv(sock):
     receive a socket read 4 byte from socket message
     """
     TOTAL_SIZE = b""
-    SIZE = 4
+    SIZE = 15
     TOTAL_DATA = b""
     while SIZE > MIN_SIZE:
         data = sock.recv(SIZE)
@@ -36,6 +44,7 @@ def send_bin(sock, data):
     size_str = str(lenn).zfill(SIZE_TO_FILL)
     sock.send(size_str.encode('utf-8'))  # Send size info
     sock.send(data)  # Send actual data
+
 
 def recv_bin(sock):
     data_size_bytes = sock.recv(SIZE_TO_FILL)

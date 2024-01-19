@@ -1,7 +1,8 @@
-
+import os
+import shutil
 import threading
 import tkinter as tk
-from tkinter import Frame, Label, messagebox
+from tkinter import Frame, Label, messagebox, Button, filedialog, Toplevel
 from PIL import Image, ImageTk
 import math
 from server import StreamingServer
@@ -24,6 +25,7 @@ class ServerGUI:
         self.aspect_ratio = resolution[1] / resolution[0]
         self.student_frames = {}
         self.student_images = {}
+        self.filename = None
         self.fullscreen_student_id = None
         self.setup_gui()
 
@@ -35,6 +37,7 @@ class ServerGUI:
         self.streams_frame.pack(fill=tk.BOTH, expand=True)
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.window.bind('<Configure>', self.on_window_resize)
+        self.open_control_panel()
         self.start_server()
 
     def on_window_resize(self, event=None):
@@ -43,6 +46,43 @@ class ServerGUI:
         video streams.
         """
         self.update_layout()
+
+    def open_control_panel(self):
+        self.control_panel = Toplevel(self.window)
+        self.control_panel.title("Control Panel")
+        upload_button = Button(self.control_panel, text="Upload File", command=self.upload_file)
+        upload_button.pack()
+        download_all_button = Button(self.control_panel, text="Download All Files", command=self.download_all_files)
+        download_all_button.pack()
+
+    def upload_file(self):
+        file_path = filedialog.askopenfilename()
+        self.filename = os.path.basename(file_path)
+        print(self.filename)
+        self.server.file_management_module.upload_file(file_path)
+
+    def download_all_files(self):
+        """
+            Moves all files from 'C:\client_files' to 'C:/test/' with a filename prefix.
+        """
+        source_directory = "C:\\client_files"
+        destination_directory = f"C:/test/{self.filename}"
+
+        # Check if the destination directory exists, create it if not
+        if not os.path.exists(destination_directory):
+            os.makedirs(destination_directory)
+
+
+        # Iterate over each file in the source directory
+        for file_name in os.listdir(source_directory):
+            # Construct full file paths
+            source_file = os.path.join(source_directory, file_name)
+            destination_file = os.path.join(destination_directory, file_name)
+
+            # Move the file
+            shutil.move(source_file, destination_file)
+        messagebox.showinfo("Download Complete", f"File saved to {destination_directory}")
+
 
     def start_server(self):
         """
