@@ -4,7 +4,7 @@ import threading
 import cv2
 from client_network_module import ClientNetworkModule
 from client_streaming import ClientStreamingModule
-from ClientFileManagementModule import ClientFileManagementModule
+from client_file_management_module import ClientFileManagementModule
 from constants import JPEG_COMPRESSION_QUALITY, PICKLE_PROTOCOL_VERSION
 
 import protocol
