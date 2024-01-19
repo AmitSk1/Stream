@@ -3,24 +3,57 @@ from Protocols import file_protocol
 
 
 class ServerFileManagementModule:
+    """
+    Manages file operations for the server.
+
+    This module handles tasks related to file storage and retrieval, including
+    storing files received from clients and sending files to clients.
+
+    Attributes:
+        last_uploaded_file (str): The path of the last file uploaded
+        by a client.
+    """
+
     def __init__(self):
+        """
+        Initializes the ServerFileManagementModule.
+        """
         self.last_uploaded_file = None
 
     def store_client_file(self, client_socket):
+        """
+        Stores a file received from a client.
+
+        Args:
+            client_socket (socket.socket): The client socket from which to
+            receive the file.
+        """
         directory = "C:/client_files"
-        # Check if the directory exists, create it if not
         if not os.path.exists(directory):
             os.makedirs(directory)
         file_protocol.recv_file(client_socket, directory)
-        print("file stored successfully in" + directory)
+        print("File stored successfully in " + directory)
 
     def send_stored_file(self, client_socket):
+        """
+        Sends the last uploaded file to a client.
+
+        Args:
+            client_socket (socket.socket): The client socket to which to send
+            the file.
+        """
         if self.last_uploaded_file:
             file_protocol.send_file(client_socket, self.last_uploaded_file)
         else:
             print("No file has been uploaded yet.")
 
-
     def upload_file(self, file_path):
+        """
+        Updates the path of the last uploaded file.
+
+        Args:
+            file_path (str): The path of the file to be considered as the last
+            uploaded.
+        """
         self.last_uploaded_file = file_path
-        print("Uploading file" + file_path)
+        print("Uploading file " + file_path)

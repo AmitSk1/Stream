@@ -10,7 +10,8 @@ class ServerNetworkModule:
         Args:
             host (str): The IP address or hostname of the server.
             port (int): The port number on which the server listens.
-            client_handler_callback (function): A callback function that will be called to handle client communication.
+            client_handler_callback (function): A callback function that will
+            be called to handle client communication.
         """
         self.host = host
         self.port = port
@@ -38,11 +39,13 @@ class ServerNetworkModule:
             try:
                 client_socket, client_address = self.server_socket.accept()
                 print(f"Client connected from {client_address}")
-                self.clients[client_address] = client_socket  # Add client to the dictionary
-
+                # Add client to the dictionary
+                self.clients[client_address] = client_socket
                 # Start a new thread to handle communication with this client
-                client_thread = threading.Thread(target=self.client_handler_callback,
-                                                 args=(client_socket, client_address))
+                client_thread = threading.\
+                    Thread(target=self.
+                           client_handler_callback,
+                           args=(client_socket, client_address))
                 client_thread.start()
             except Exception as e:
                 print(f"Error accepting new connection: {e}")

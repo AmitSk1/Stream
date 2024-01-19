@@ -1,3 +1,10 @@
+"""
+Server GUI
+Author: Amit Skarbin
+
+GUI for the teacher to monitor video streams from students.
+"""
+
 import os
 import shutil
 import threading
@@ -11,12 +18,20 @@ import cv2
 
 class ServerGUI:
     """
-    GUI for the teacher to monitor video streams from students.
+    GUI class for the server application.
+
+    This class creates a graphical user interface for the server to control
+    and monitor video streaming from clients.
     """
 
     def __init__(self, host, port, resolution=(640, 480)):
         """
         Initializes the server GUI with the server and display settings.
+
+        Args:
+            host (str): The server's hostname or IP address.
+            port (int): The port number on which the server is listening.
+            resolution (tuple): The resolution for displaying video streams.
         """
         self.server = StreamingServer(host, port, self.new_frame_received)
         self.window = tk.Tk()
@@ -42,54 +57,57 @@ class ServerGUI:
 
     def on_window_resize(self, event=None):
         """
-        Responds to the window resize event to update the layout of
-        video streams.
+        Responds to the window resize event to update the layout
+        of video streams.
         """
         self.update_layout()
 
     def open_control_panel(self):
+        """
+        Opens the control panel for additional functionalities.
+        """
         self.control_panel = Toplevel(self.window)
         self.control_panel.title("Control Panel")
-        upload_button = Button(self.control_panel, text="Upload File", command=self.upload_file)
+        upload_button = Button(self.control_panel, text="Upload File",
+                               command=self.upload_file)
         upload_button.pack()
-        download_all_button = Button(self.control_panel, text="Download All Files", command=self.download_all_files)
+        download_all_button = Button(self.control_panel,
+                                     text="Download All Files",
+                                     command=self.download_all_files)
         download_all_button.pack()
 
     def upload_file(self):
+        """
+        Opens a file dialog to select a file to upload.
+        """
         file_path = filedialog.askopenfilename()
         self.filename = os.path.basename(file_path)
         print(self.filename)
         self.server.file_management_module.upload_file(file_path)
+        messagebox.showinfo("Upload", "File upload started.")
 
     def download_all_files(self):
         """
-            Moves all files from 'C:\client_files' to 'C:/test/' with a filename prefix.
+        Moves all files from 'C:\\client_files' to 'C:/test/'
+        with a filename prefix.
         """
         source_directory = "C:\\client_files"
         destination_directory = f"C:/test/{self.filename}"
-
-        # Check if the destination directory exists, create it if not
         if not os.path.exists(destination_directory):
             os.makedirs(destination_directory)
-
-
-        # Iterate over each file in the source directory
         for file_name in os.listdir(source_directory):
-            # Construct full file paths
             source_file = os.path.join(source_directory, file_name)
             destination_file = os.path.join(destination_directory, file_name)
-
-            # Move the file
             shutil.move(source_file, destination_file)
-        messagebox.showinfo("Download Complete", f"File saved to {destination_directory}")
-
+        messagebox.showinfo("Download Complete",
+                            f"File saved to {destination_directory}")
 
     def start_server(self):
         """
         Starts the streaming server in a separate thread.
         """
         threading.Thread(target=self.server.start_server, daemon=True).start()
-        print("Starting streaming server")
+        messagebox.showinfo("Server", "Streaming server started.")
 
     def add_student_stream(self, student_id):
         """
