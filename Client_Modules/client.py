@@ -113,7 +113,7 @@ class StreamingClient:
         Signals the client to stop streaming and shuts down the connection.
         """
         if self.running:
-            print("Stopping the client...")
+            protocol.send(self.network_module.stream_socket, "STOP")
             self.stop_stream()  # Stop the streaming thread
             # Stop the file thread
             self.file_management_module.file_socket.close()

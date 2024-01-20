@@ -45,6 +45,5 @@ class ClientNetworkModule:
         """
         Closes the streaming and file sockets.
         """
-        self.file_socket.close()
         self.stream_socket.close()
         print("Sockets closed.")

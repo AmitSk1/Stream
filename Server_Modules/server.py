@@ -72,9 +72,13 @@ class StreamingServer:
                     self.handle_client_communication(client_socket,
                                                      client_address)
                 elif data == "UPLOAD_FILE":
-                    self.file_management_module.\
+                    self.file_management_module. \
                         store_client_file(client_socket)
+                elif data == "STOP":
+                    self.handle_disconnection(client_socket, client_address,
+                                              error="connection closed")
             except ConnectionError as e:
+                print("Connection error")
                 self.handle_disconnection(client_socket, client_address, e)
                 break
             except Exception as e:
@@ -84,26 +88,37 @@ class StreamingServer:
 
     def handle_client_communication(self, client_socket, client_address):
         data = protocol.recv_bin(client_socket)
-        self.frame_processing_module.\
+        self.frame_processing_module. \
             process_received_frame(data, client_address)
+
+    def diconnection(self, client_socket, client_address):
+        # Remove client from the dictionary when disconnected
+        print("Client disconnected")
+        del self.network_module.clients[client_address]
+        print(f"Client {client_address} disconnecte")
+        if self.frame_processing_module.new_frame_callback is not None:
+            self.frame_processing_module \
+                .new_frame_callback(client_address, None, None)
+        client_socket.close()
 
     def handle_disconnection(self, client_socket, client_address, error):
         # Remove client from the dictionary when disconnected
+        print("Client disconnected")
         del self.network_module.clients[client_address]
         print(f"Client {client_address} disconnected: {error}")
         if self.frame_processing_module.new_frame_callback is not None:
-            self.frame_processing_module\
+            self.frame_processing_module \
                 .new_frame_callback(client_address, None, None)
         client_socket.close()
 
     def log_error(self, client_address, error):
         print(f"Error handling client {client_address}: {error}")
         if self.frame_processing_module.new_frame_callback is not None:
-            self.frame_processing_module\
+            self.frame_processing_module \
                 .new_frame_callback(client_address, None, None)
 
     def cleanup_connection(self, client_socket, client_address):
         client_socket.close()
         if self.frame_processing_module.new_frame_callback is not None:
-            self.frame_processing_module\
+            self.frame_processing_module \
                 .new_frame_callback(client_address, None, None)

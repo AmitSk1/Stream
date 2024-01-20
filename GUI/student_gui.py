@@ -81,7 +81,6 @@ class ClientGUI:
         """
         self.client.stop_client()
         self.window.destroy()
-        messagebox.showinfo("Streaming", "Streaming has stopped.")
 
     def create_control_window(self):
         """
