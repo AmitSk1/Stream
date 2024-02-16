@@ -40,6 +40,9 @@ class StreamingClient:
         self.file_management_module = ClientFileManagementModule(
             self.network_module.file_socket)
         self.username = None
+        self.test_over = False
+        self.stream_thread = None
+        self.listen_thread = None
         self.running = False
 
     def start_stream(self, username):
@@ -53,16 +56,39 @@ class StreamingClient:
         self.username = username
         self.running = True
         self.network_module.connect_to_server()
-        stream_thread = threading.Thread(target=self.stream_video)
-        stream_thread.start()
+        self.stream_thread = threading.Thread(target=self.stream_video,
+                                              daemon=True)
+        self.stream_thread.start()
+        # Start the listening thread
+        self.listen_thread = threading.Thread(target=self.listen_to_server,
+                                              daemon=True)
+        self.listen_thread.start()
+
+    def listen_to_server(self):
+        try:
+            print("listen_to_server")
+            while self.running:
+                message = protocol.recv(self.network_module.listen_socket)
+                print(message)
+                if message == "TEST_OVER":
+                    print("Test Over")
+                    self.test_over = True
+                    break
+        except Exception as e:
+            print(f"listen to server have an error: {e}")
+        finally:
+            self.running = False
 
     def stop_stream(self):
         """
         Stops the video streaming process and releases resources.
         """
+        # Signal to stop running
         self.running = False
+
         self.streaming_module.camera.release()
         self.network_module.close_sockets()
+
         print("Streaming stopped")
 
     def stream_video(self):
@@ -70,15 +96,17 @@ class StreamingClient:
         Continuously captures and sends video frames to the server.
         """
         while self.running:
+
             screen_np = self.streaming_module.capture_screen()
             cam_frame = self.streaming_module.capture_camera_frame()
             if cam_frame is None:
                 break
 
-            combined_frame = self.streaming_module.\
-                combine_frames(screen_np, cam_frame)
+            combined_frame = self.streaming_module.combine_frames(screen_np,
+                                                                  cam_frame)
             if not self.send_frame(combined_frame):
                 break
+
         self.stop_stream()
 
     def send_frame(self, frame):
@@ -91,8 +119,9 @@ class StreamingClient:
         Returns:
             bool: True if the frame was sent successfully, False otherwise.
         """
+
         protocol.send(self.network_module.stream_socket, "STREAM")
-        result, encoded_frame = cv2.\
+        result, encoded_frame = cv2. \
             imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY,
                                      JPEG_COMPRESSION_QUALITY])
         if not result:
@@ -112,11 +141,25 @@ class StreamingClient:
         """
         Signals the client to stop streaming and shuts down the connection.
         """
-        if self.running:
-            protocol.send(self.network_module.stream_socket, "STOP")
-            self.stop_stream()  # Stop the streaming thread
-            # Stop the file thread
-            self.file_management_module.file_socket.close()
-            print("Client stopped.")
-        else:
-            print("Client is not running.")
+
+        # Ensure the running flag is False to stop threads
+        self.running = False
+        protocol.send(self.network_module.stream_socket, "STOP")
+        # Wait for the streaming and listening threads to finish
+        if self.stream_thread:
+            self.stream_thread.join()
+            print("stream thread finished")
+        if self.listen_thread:
+            self.listen_thread.join()
+            print("listen thread finished")
+
+        self.stop_stream()
+
+        print(self.network_module.stream_socket)
+        print(self.network_module.stream_socket)
+        print(self.network_module.file_socket)
+        print(self.stream_thread)
+        print(self.listen_thread)
+        print("Closing")
+
+        print("Client stopped.")

@@ -5,7 +5,7 @@ Amit Skarbin
 
 import os
 
-from Protocols import file_protocol
+from Protocols import file_protocol, protocol
 
 
 class ServerFileManagementModule:
@@ -49,8 +49,10 @@ class ServerFileManagementModule:
             the file.
         """
         if self.last_uploaded_file:
+            protocol.send(client_socket, "FILE")
             file_protocol.send_file(client_socket, self.last_uploaded_file)
         else:
+            protocol.send(client_socket, "NO_FILE")
             print("No file has been uploaded yet.")
 
     def upload_file(self, file_path):

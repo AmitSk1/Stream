@@ -36,6 +36,14 @@ class ClientFileManagementModule:
         except Exception as e:
             print(f"Error requesting file: {e}")
 
+    def check_if_file_upload(self):
+        response = protocol.recv(self.file_socket)
+        if response == "NO_FILE":
+            print("no file available for download")
+            return False
+        else:
+            return True
+
     def receive_file_from_server(self, directory):
         """
         Receives a file from the server and saves it to the specified directory
@@ -44,6 +52,8 @@ class ClientFileManagementModule:
             directory (str): The directory where the file will be saved.
         """
         file_protocol.recv_file(self.file_socket, directory)
+
+        print(f"File received and saved to {directory}")
 
     def upload_file(self, file_path, username):
         """

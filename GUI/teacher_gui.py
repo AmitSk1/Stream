@@ -9,7 +9,7 @@ import os
 import shutil
 import threading
 import tkinter as tk
-from tkinter import Frame, Label, messagebox, Button, filedialog, Toplevel
+from tkinter import Frame, Label, messagebox, Button, filedialog, Toplevel, ttk
 from PIL import Image, ImageTk
 import math
 from Server_Modules.server import StreamingServer
@@ -48,11 +48,40 @@ class ServerGUI:
         """
         Sets up the initial graphical user interface for the server.
         """
-        self.streams_frame = Frame(self.window)
+        # Styling
+        style = ttk.Style()
+        style.configure('TButton', font=('Arial', 10), padding=10)
+        style.configure('TLabel', font=('Arial', 12), padding=5)
+
+        # Main layout frame
+        self.streams_frame = ttk.Frame(self.window, padding="30 30 30 30")
         self.streams_frame.pack(fill=tk.BOTH, expand=True)
+        self.streams_frame.columnconfigure(0, weight=1)
+        self.streams_frame.rowconfigure(0, weight=1)
+
+        # Load the logo image and display it
+        logo_image = Image.open(
+            "background.png")
+        logo_photo = ImageTk.PhotoImage(logo_image)
+        self.logo_label = ttk.Label(self.streams_frame, image=logo_photo)
+        self.logo_label.image = logo_photo  # Keep a reference
+        self.logo_label.pack(side=tk.TOP, pady=10)
+
+        # Initialize the placeholder message
+        self.placeholder_label = ttk.Label(self.streams_frame,
+                                           text="Waiting for students to connect",
+                                           font=('Arial', 16))
+        self.placeholder_label.pack(fill=tk.BOTH, expand=True)
+
+        # Window properties
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.window.bind('<Configure>', self.on_window_resize)
+        self.window.resizable(True, True)
+
+        # Control Panel
         self.open_control_panel()
+
+        # Start server
         self.start_server()
 
     def on_window_resize(self, event=None):
@@ -66,15 +95,21 @@ class ServerGUI:
         """
         Opens the control panel for additional functionalities.
         """
+        # Control panel design
         self.control_panel = Toplevel(self.window)
         self.control_panel.title("Control Panel")
-        upload_button = Button(self.control_panel, text="Upload File",
-                               command=self.upload_file)
-        upload_button.pack()
-        download_all_button = Button(self.control_panel,
-                                     text="Download All Files",
-                                     command=self.download_all_files)
-        download_all_button.pack()
+        self.control_panel.resizable(False, False)
+
+        # Frame to contain the buttons with padding
+        control_frame = ttk.Frame(self.control_panel, padding="10 10 10 10")
+        control_frame.pack(fill=tk.BOTH, expand=True)
+
+        ttk.Button(control_frame, text="Upload File",
+                   command=self.upload_file).pack(pady=5)
+        ttk.Button(control_frame, text="Download All Files",
+                   command=self.download_all_files).pack(pady=5)
+        ttk.Button(control_frame, text="Finish test",
+                   command=self.finish_test).pack(pady=5)
 
     def upload_file(self):
         """
@@ -85,6 +120,10 @@ class ServerGUI:
         print(self.filename)
         self.server.file_management_module.upload_file(file_path)
         messagebox.showinfo("Upload", "File upload started.")
+
+    def finish_test(self):
+        print("finish test, sending notification for clients")
+        self.server.handle_finish_test()
 
     def download_all_files(self):
         """
@@ -113,6 +152,9 @@ class ServerGUI:
         """
         Adds a new student stream to the GUI.
         """
+        # Hide the placeholder message when a student connects
+        self.placeholder_label.pack_forget()
+        self.logo_label.pack_forget()
         frame_label = Label(self.streams_frame)
         frame_label.bind('<Double-Button-1>',
                          lambda e, sid=student_id: self.toggle_fullscreen(sid))
@@ -186,6 +228,8 @@ class ServerGUI:
             frame_label.destroy()
             del self.student_frames[student_id]
             self.update_layout()
+        if not self.student_frames:
+            self.placeholder_label.pack(fill=tk.BOTH, expand=True)
 
     def update_video_display(self, student_id, frame, username):
         """
@@ -244,6 +288,7 @@ class ServerGUI:
         """
         if messagebox.askokcancel("Quit", "Do you want to "
                                           "shut down the server?"):
+
             self.server.stop_server()
             self.window.destroy()
 
@@ -255,5 +300,5 @@ class ServerGUI:
 
 
 if __name__ == "__main__":
-    gui = ServerGUI('192.168.68.106', 4532)
+    gui = ServerGUI('127.0.0.1', 2574)
     gui.run()

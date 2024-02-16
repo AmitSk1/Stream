@@ -32,6 +32,7 @@ class ClientNetworkModule:
         self.port = port
         self.stream_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.file_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def connect_to_server(self):
         """
@@ -39,6 +40,7 @@ class ClientNetworkModule:
         """
         self.file_socket.connect((self.host, self.port))
         self.stream_socket.connect((self.host, self.port))
+        self.listen_socket.connect((self.host, self.port))
         print("Client connection established.")
 
     def close_sockets(self):
@@ -46,4 +48,7 @@ class ClientNetworkModule:
         Closes the streaming and file sockets.
         """
         self.stream_socket.close()
-        print("Sockets closed.")
+        self.file_socket.close()
+        self.listen_socket.close()
+
+        print("closed all sockets .")

@@ -6,6 +6,8 @@ Amit Skarbin
 import socket
 import threading
 
+from Protocols import protocol
+
 
 class ServerNetworkModule:
     def __init__(self, host, port, client_handler_callback):
@@ -26,6 +28,16 @@ class ServerNetworkModule:
         self.clients = {}  # Dictionary to store connected clients
         self.running = False
 
+    def notify_clients_test_over(self):
+        """
+        Notify all connected clients that the test is over.
+        """
+        for client_socket in self.clients.values():
+            try:
+                protocol.send(client_socket, "TEST_OVER")
+            except Exception as e:
+                print(f"Error notifying client: {e}")
+
     def start_server(self):
         """
         Starts the server to listen for incoming connections and handle them.
@@ -43,6 +55,7 @@ class ServerNetworkModule:
         while self.running:
             try:
                 client_socket, client_address = self.server_socket.accept()
+
                 print(f"Client connected from {client_address}")
                 # Add client to the dictionary
                 self.clients[client_address] = client_socket
@@ -62,10 +75,22 @@ class ServerNetworkModule:
         Stops the server and closes all resources.
         """
         self.running = False
+        self.notify_clients_test_over()
         for client_address, client_socket in self.clients.items():
             client_socket.close()
         self.server_socket.close()
         print("Server stopped")
+
+    def notify_clients_test_over(self):
+        """
+        Notify all connected clients that the test is over.
+        """
+        for client_socket in self.clients.values():
+            try:
+                print(f"finish test for client{client_socket}")
+                protocol.send(client_socket, "TEST_OVER")
+            except Exception as e:
+                print(f"Error notifying client: {e}")
 
     def remove_client(self, client_address):
         """
