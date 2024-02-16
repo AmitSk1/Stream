@@ -32,11 +32,11 @@ class ServerNetworkModule:
         """
         Notify all connected clients that the test is over.
         """
-        for client_socket in self.clients.values():
+        for client_address, client_socket in self.clients.items():
             try:
                 protocol.send(client_socket, "TEST_OVER")
             except Exception as e:
-                print(f"Error notifying client: {e}")
+                print(f"Error notifying client at {client_address}: {e}")
 
     def start_server(self):
         """
@@ -85,9 +85,9 @@ class ServerNetworkModule:
         """
         Notify all connected clients that the test is over.
         """
+        print(f"finish test for client")
         for client_socket in self.clients.values():
             try:
-                print(f"finish test for client{client_socket}")
                 protocol.send(client_socket, "TEST_OVER")
             except Exception as e:
                 print(f"Error notifying client: {e}")

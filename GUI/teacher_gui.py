@@ -123,7 +123,7 @@ class ServerGUI:
 
     def finish_test(self):
         print("finish test, sending notification for clients")
-        self.server.handle_finish_test()
+        self.server.network_module.notify_clients_test_over()
 
     def download_all_files(self):
         """
@@ -288,7 +288,6 @@ class ServerGUI:
         """
         if messagebox.askokcancel("Quit", "Do you want to "
                                           "shut down the server?"):
-
             self.server.stop_server()
             self.window.destroy()
 
@@ -300,5 +299,5 @@ class ServerGUI:
 
 
 if __name__ == "__main__":
-    gui = ServerGUI('127.0.0.1', 2574)
+    gui = ServerGUI('127.0.0.1', 1278)
     gui.run()

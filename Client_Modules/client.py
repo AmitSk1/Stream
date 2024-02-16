@@ -4,6 +4,7 @@ Amit Skarbin
 """
 
 import pickle
+import sys
 import threading
 import cv2
 from Client_Modules.client_network_module import ClientNetworkModule
@@ -60,24 +61,19 @@ class StreamingClient:
                                               daemon=True)
         self.stream_thread.start()
         # Start the listening thread
-        self.listen_thread = threading.Thread(target=self.listen_to_server,
-                                              daemon=True)
+        self.listen_thread = threading.Thread(target=self.listen_to_server)
         self.listen_thread.start()
 
     def listen_to_server(self):
         try:
-            print("listen_to_server")
             while self.running:
                 message = protocol.recv(self.network_module.listen_socket)
-                print(message)
                 if message == "TEST_OVER":
-                    print("Test Over")
                     self.test_over = True
-                    break
+                    print("Received TEST_OVER from server, stopping client.")
         except Exception as e:
             print(f"listen to server have an error: {e}")
-        finally:
-            self.running = False
+
 
     def stop_stream(self):
         """
@@ -146,20 +142,11 @@ class StreamingClient:
         self.running = False
         protocol.send(self.network_module.stream_socket, "STOP")
         # Wait for the streaming and listening threads to finish
-        if self.stream_thread:
+        if self.stream_thread and self.stream_thread.is_alive():
             self.stream_thread.join()
-            print("stream thread finished")
-        if self.listen_thread:
+        if self.listen_thread and self.listen_thread.is_alive():
             self.listen_thread.join()
-            print("listen thread finished")
 
         self.stop_stream()
-
-        print(self.network_module.stream_socket)
-        print(self.network_module.stream_socket)
-        print(self.network_module.file_socket)
-        print(self.stream_thread)
-        print(self.listen_thread)
-        print("Closing")
-
-        print("Client stopped.")
+        sys.exit()  # Exit the program
+        print("Client has been stopped.")

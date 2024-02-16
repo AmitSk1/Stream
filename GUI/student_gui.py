@@ -6,6 +6,7 @@ A GUI for the student client to enter their name and start streaming.
 """
 
 import os
+import sys
 from tkinter import Tk, StringVar, Label, Entry, Button, messagebox, \
     Toplevel, Frame, filedialog, ttk
 from Client_Modules.client import StreamingClient
@@ -103,6 +104,15 @@ class ClientGUI:
                                                style='Streaming.TButton')
             messagebox.showinfo("Streaming",
                                 "You are now streaming. Good luck!")
+            self.check_test_over_flag()
+
+    def check_test_over_flag(self):
+        # This method checks the flag every 1000ms (1 second)
+        if self.client.test_over:
+            self.handle_test_over()
+        else:
+            # Schedule this method to be called again after 1000ms
+            self.window.after(1000, self.check_test_over_flag)
 
     def handle_test_over(self):
         messagebox.showinfo("Test Over",
@@ -110,22 +120,25 @@ class ClientGUI:
                             "will now close.")
         self.client.stop_client()
         self.window.destroy()
+        sys.exit()  # This will exit the program
 
     def on_closing(self):
         """
         Handles the event when the GUI window is closing.
         """
         if messagebox.askokcancel("Quit", "Do you want to exit?"):
-            self.client.stop_client()
             self.window.destroy()
+            self.client.stop_client()
+            sys.exit()  # This will exit the program
 
     def finish_test(self):
         """
         Stops the streaming process.
         """
         if messagebox.askokcancel("Quit", "Do you want to finish the test"):
-            self.client.stop_client()
             self.window.destroy()
+            self.client.stop_client()
+            sys.exit()  # This will exit the program
 
     def check_stream_started(self):
         """
@@ -178,13 +191,9 @@ class ClientGUI:
         """
         Runs the main loop of the GUI.
         """
-        while True:
-            self.window.mainloop()
-            if self.client.test_over:
-                self.handle_test_over()
-                break
+        self.window.mainloop()
 
 
 if __name__ == "__main__":
-    gui = ClientGUI('127.0.0.1', 2574)
+    gui = ClientGUI('127.0.0.1', 1278)
     gui.run()

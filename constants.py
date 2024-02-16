@@ -9,7 +9,7 @@ CHUNK_SIZE = 4096  # bytes
 EOF = b"__EOF__"   # End of file marker
 
 # Constants for the client
-FPS = 20
+FPS = 10
 RESOLUTION_VERTICAL = 320
 RESOLUTION_HORIZONTAL = 240
 CAPTURE_DEVICE_INDEX = 0  # Index of the camera capture device
