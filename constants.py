@@ -1,4 +1,3 @@
-
 """
 Constants
 Amit Skarbin
@@ -6,7 +5,6 @@ Amit Skarbin
 import cv2
 
 CHUNK_SIZE = 4096  # bytes
-EOF = b"__EOF__"   # End of file marker
 
 # Constants for the client
 FPS = 10

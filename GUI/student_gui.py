@@ -7,10 +7,8 @@ A GUI for the student client to enter their name and start streaming.
 
 import os
 import sys
-from tkinter import Tk, StringVar, Label, Entry, Button, messagebox, \
-    Toplevel, Frame, filedialog, ttk
+from tkinter import Tk, StringVar, messagebox, filedialog, ttk
 from Client_Modules.client import StreamingClient
-from langdetect import detect
 
 
 class ClientGUI:
@@ -28,13 +26,15 @@ class ClientGUI:
         Args:
             The server IP address.
             The port number on which the server is listening.
+            client name
+            flag to check if stream
         """
         self.start_stream_button = None
         self.client = StreamingClient(host, port)
         self.window = Tk()
         self.window.title("Student GUI")
         self.username_var = StringVar()
-        self.stream_started = False  # Add a flag to track if the stream has started
+        self.stream_started = False
         self.setup_gui()
 
     def setup_gui(self):
@@ -80,7 +80,9 @@ class ClientGUI:
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
     def is_english_name(self, name):
-        # Check if all characters in the name are English letters
+        """
+             Check if all characters in the name are English letters
+        """
         for char in name:
             if not char.isalpha() or not char.isascii():
                 return False
@@ -104,23 +106,35 @@ class ClientGUI:
                                                style='Streaming.TButton')
             messagebox.showinfo("Streaming",
                                 "You are now streaming. Good luck!")
+            # check if teacher finish test
             self.check_test_over_flag()
 
     def check_test_over_flag(self):
-        # This method checks the flag every 1000ms (1 second)
+        """
+        checks if the server finish the test bade on signal from the server.
+        return this method every 1 second
+        """
         if self.client.test_over:
             self.handle_test_over()
         else:
-            # Schedule this method to be called again after 1000ms
             self.window.after(1000, self.check_test_over_flag)
 
     def handle_test_over(self):
+        """
+            Handles actions to be performed
+            once the server signals the test is over.
+
+            Displays a message informing the user the test is completed,
+            stops the client
+            from streaming, destroys the application window,
+            and exits the program.
+        """
         messagebox.showinfo("Test Over",
                             "The test is over. The application "
                             "will now close.")
         self.client.stop_client()
         self.window.destroy()
-        sys.exit()  # This will exit the program
+        sys.exit()
 
     def on_closing(self):
         """
@@ -129,7 +143,7 @@ class ClientGUI:
         if messagebox.askokcancel("Quit", "Do you want to exit?"):
             self.window.destroy()
             self.client.stop_client()
-            sys.exit()  # This will exit the program
+            sys.exit()
 
     def finish_test(self):
         """

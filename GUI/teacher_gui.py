@@ -69,7 +69,8 @@ class ServerGUI:
 
         # Initialize the placeholder message
         self.placeholder_label = ttk.Label(self.streams_frame,
-                                           text="Waiting for students to connect",
+                                           text="Waiting for students "
+                                                "to connect",
                                            font=('Arial', 16))
         self.placeholder_label.pack(fill=tk.BOTH, expand=True)
 

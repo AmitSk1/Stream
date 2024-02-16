@@ -65,6 +65,14 @@ class StreamingClient:
         self.listen_thread.start()
 
     def listen_to_server(self):
+        """
+        Listens for server messages, specifically for the "TEST_OVER" signal.
+        If "TEST_OVER" message is received, it indicates
+        the server has ended the test, and sets
+        `test_over` flag to True. s
+        Raises:
+            Exception: Logs any network communication errors encountered.
+        """
         try:
             while self.running:
                 message = protocol.recv(self.network_module.listen_socket)
@@ -74,14 +82,10 @@ class StreamingClient:
         except Exception as e:
             print(f"listen to server have an error: {e}")
 
-
     def stop_stream(self):
         """
         Stops the video streaming process and releases resources.
         """
-        # Signal to stop running
-        self.running = False
-
         self.streaming_module.camera.release()
         self.network_module.close_sockets()
 
