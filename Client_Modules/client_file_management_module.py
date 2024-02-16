@@ -65,7 +65,7 @@ class ClientFileManagementModule:
         """
         try:
             directory, base_name = os.path.split(file_path)
-            new_file_name = os.path.join(directory, username + base_name)
+            new_file_name = os.path.join(directory, username + "_" + base_name)
             os.rename(file_path, new_file_name)
             protocol.send(self.file_socket, "UPLOAD_FILE")
             file_protocol.send_file(self.file_socket, new_file_name)
