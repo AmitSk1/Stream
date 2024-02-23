@@ -52,7 +52,6 @@ class ClientFileManagementModule:
             directory (str): The directory where the file will be saved.
         """
         file_protocol.recv_file(self.file_socket, directory)
-
         print(f"File received and saved to {directory}")
 
     def upload_file(self, file_path, username):

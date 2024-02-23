@@ -71,6 +71,8 @@ class ClientGUI:
         ttk.Button(main_frame, text="Download File",
                    command=self.download_file).grid(row=2, column=1,
                                                     sticky='EW')
+        ttk.Button(main_frame, text="Open File", command=self.open_file).grid(
+            row=3, column=0, sticky='EW', columnspan=2)
 
         # Enable window resizing
         self.window.resizable(True, True)
@@ -79,6 +81,29 @@ class ClientGUI:
 
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
+    def open_file(self):
+        """
+            Opens all files in the 'C:/testKeeper' directory using the default application for each file.
+        """
+        opened = False
+        directory = "C:/testKeeper"  # Set your directory
+        if not os.path.exists(directory):
+            messagebox.showerror("Error",
+                                 "The specified directory does not exist.")
+            return
+
+        for file_name in os.listdir(directory):
+            file_path = os.path.join(directory, file_name)
+            if os.path.isfile(
+                    file_path):  # Ensure it is a file, not a directory
+                try:
+                    os.startfile(file_path)
+                    opened = True
+                except Exception as e:
+                    messagebox.showerror("Error",
+                                         f"Failed to open file: {file_path}\nError: {e}")
+        if opened:
+            messagebox.showinfo("open", "file open successefully")
     def is_english_name(self, name):
         """
              Check if all characters in the name are English letters
@@ -209,5 +234,5 @@ class ClientGUI:
 
 
 if __name__ == "__main__":
-    gui = ClientGUI('192.168.68.112', 1278)
+    gui = ClientGUI('127.0.0.1', 1278)
     gui.run()

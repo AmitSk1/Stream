@@ -300,5 +300,5 @@ class ServerGUI:
 
 
 if __name__ == "__main__":
-    gui = ServerGUI('192.168.68.112', 1278)
+    gui = ServerGUI('127.0.0.1', 1278)
     gui.run()
