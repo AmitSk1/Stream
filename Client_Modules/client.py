@@ -77,6 +77,7 @@ class StreamingClient:
             while self.running:
                 message = protocol.recv(self.network_module.listen_socket)
                 if message == "TEST_OVER":
+
                     self.test_over = True
                     print("Received TEST_OVER from server, stopping client.")
         except Exception as e:

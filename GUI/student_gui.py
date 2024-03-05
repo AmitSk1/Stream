@@ -7,6 +7,7 @@ A GUI for the student client to enter their name and start streaming.
 
 import os
 import sys
+import time
 from tkinter import Tk, StringVar, messagebox, filedialog, ttk
 from Client_Modules.client import StreamingClient
 
@@ -83,7 +84,8 @@ class ClientGUI:
 
     def open_file(self):
         """
-            Opens all files in the 'C:/testKeeper' directory using the default application for each file.
+            Opens all files in the 'C:/testKeeper' directory using the default
+            application for each file.
         """
         opened = False
         directory = "C:/testKeeper"  # Set your directory
@@ -104,6 +106,7 @@ class ClientGUI:
                                          f"Failed to open file: {file_path}\nError: {e}")
         if opened:
             messagebox.showinfo("open", "file open successefully")
+
     def is_english_name(self, name):
         """
              Check if all characters in the name are English letters
@@ -136,10 +139,11 @@ class ClientGUI:
 
     def check_test_over_flag(self):
         """
-        checks if the server finish the test bade on signal from the server.
+        checks if the server finish the test bade on signal fr      om the server.
         return this method every 1 second
         """
         if self.client.test_over:
+
             self.handle_test_over()
         else:
             self.window.after(1000, self.check_test_over_flag)
@@ -154,11 +158,18 @@ class ClientGUI:
             from streaming, destroys the application window,
             and exits the program.
         """
+        messagebox.showinfo("TEST OVER", "The test will be over in one "
+                                         "minute , submit the test")
+
+        self.window.after(60000, self.stop_test)  # wait one minute
+        # before finish the test
+
+    def stop_test(self):
+        self.client.stop_client()
+        self.window.destroy()
         messagebox.showinfo("Test Over",
                             "The test is over. The application "
                             "will now close.")
-        self.client.stop_client()
-        self.window.destroy()
         sys.exit()
 
     def on_closing(self):
