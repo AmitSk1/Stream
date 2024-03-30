@@ -9,10 +9,10 @@ import os
 import shutil
 import threading
 import tkinter as tk
-from tkinter import Frame, Label, messagebox, Button, filedialog, Toplevel, ttk
+from tkinter import Label, messagebox, filedialog, Toplevel, ttk
 from PIL import Image, ImageTk
 import math
-from Server_Modules.server import StreamingServer
+from Server_Modules.server import Server
 import cv2
 
 
@@ -33,13 +33,12 @@ class ServerGUI:
             port (int): The port number on which the server is listening.
             resolution (tuple): The resolution for displaying video streams.
         """
-        self.server = StreamingServer(host, port, self.new_frame_received)
+        self.server = Server(host, port, self.new_frame_received)
         self.window = tk.Tk()
         self.window.title("Teacher's Dashboard")
         self.resolution = resolution
         self.aspect_ratio = resolution[1] / resolution[0]
         self.student_frames = {}
-        self.student_images = {}
         self.filename = None
         self.fullscreen_student_id = None
         self.setup_gui()

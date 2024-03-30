@@ -13,7 +13,6 @@ from constants import RESOLUTION_VERTICAL, RESOLUTION_HORIZONTAL, \
 class ClientStreamingModule:
     """
     Manages the streaming of video data for the client.
-
     This module handles the capture of screen and camera frames and combines
     them for streaming.
 

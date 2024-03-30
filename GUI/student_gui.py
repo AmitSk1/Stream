@@ -7,9 +7,8 @@ A GUI for the student client to enter their name and start streaming.
 
 import os
 import sys
-import time
 from tkinter import Tk, StringVar, messagebox, filedialog, ttk
-from Client_Modules.client import StreamingClient
+from Client_Modules.client import Client
 
 
 class ClientGUI:
@@ -22,7 +21,7 @@ class ClientGUI:
 
     def __init__(self, host, port):
         """
-        Initializes the ClientGUI with a StreamingClient.
+        Initializes the ClientGUI with a Client.
 
         Args:
             The server IP address.
@@ -31,7 +30,7 @@ class ClientGUI:
             flag to check if stream
         """
         self.start_stream_button = None
-        self.client = StreamingClient(host, port)
+        self.client = Client(host, port)
         self.window = Tk()
         self.window.title("Student GUI")
         self.username_var = StringVar()
@@ -103,7 +102,8 @@ class ClientGUI:
                     opened = True
                 except Exception as e:
                     messagebox.showerror("Error",
-                                         f"Failed to open file: {file_path}\nError: {e}")
+                                         f"Failed to open "
+                                         f"file: {file_path}\nError: {e}")
         if opened:
             messagebox.showinfo("open", "file open successefully")
 
@@ -139,7 +139,7 @@ class ClientGUI:
 
     def check_test_over_flag(self):
         """
-        checks if the server finish the test bade on signal fr      om the server.
+        checks if the server finish the test bade on signal from the server.
         return this method every 1 second
         """
         if self.client.test_over:

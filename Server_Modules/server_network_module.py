@@ -5,8 +5,7 @@ Amit Skarbin
 
 import socket
 import threading
-
-from Protocols import protocol
+from Protocols.protocol import Protocol
 
 
 class ServerNetworkModule:
@@ -34,7 +33,7 @@ class ServerNetworkModule:
         """
         for client_address, client_socket in self.clients.items():
             try:
-                protocol.send(client_socket, "TEST_OVER")
+                Protocol.send(client_socket, "TEST_OVER")
             except Exception as e:
                 print(f"Error notifying client at {client_address}: {e}")
 
@@ -81,16 +80,7 @@ class ServerNetworkModule:
         self.server_socket.close()
         print("Server stopped")
 
-    def notify_clients_test_over(self):
-        """
-        Notify all connected clients that the test is over.
-        """
-        print(f"finish test for client")
-        for client_socket in self.clients.values():
-            try:
-                protocol.send(client_socket, "TEST_OVER")
-            except Exception as e:
-                print(f"Error notifying client: {e}")
+
 
     def remove_client(self, client_address):
         """

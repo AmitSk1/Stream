@@ -5,7 +5,9 @@ Amit Skarbin
 
 import os
 
-from Protocols import file_protocol, protocol
+from Protocols.file_protocol import FileProtocol
+from Protocols.protocol import Protocol
+
 
 
 class ServerFileManagementModule:
@@ -37,7 +39,7 @@ class ServerFileManagementModule:
         directory = "C:/client_files"
         if not os.path.exists(directory):
             os.makedirs(directory)
-        file_protocol.recv_file(client_socket, directory)
+        FileProtocol.recv_file(client_socket, directory)
         print("File stored successfully in " + directory)
 
     def send_stored_file(self, client_socket):
@@ -49,10 +51,10 @@ class ServerFileManagementModule:
             the file.
         """
         if self.last_uploaded_file:
-            protocol.send(client_socket, "FILE")
-            file_protocol.send_file(client_socket, self.last_uploaded_file)
+            Protocol.send(client_socket, "FILE")
+            FileProtocol.send_file(client_socket, self.last_uploaded_file)
         else:
-            protocol.send(client_socket, "NO_FILE")
+            Protocol.send(client_socket, "NO_FILE")
             print("No file has been uploaded yet.")
 
     def upload_file(self, file_path):

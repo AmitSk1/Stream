@@ -4,8 +4,7 @@ Amit Skarbin
 """
 
 import socket
-
-from Protocols import file_protocol, protocol
+from Protocols.protocol import Protocol
 from Server_Modules.server_network_module import ServerNetworkModule
 from Server_Modules.server_file_management_module \
     import ServerFileManagementModule
@@ -13,7 +12,7 @@ from Server_Modules.serve_frame_processing_module \
     import ServerFrameProcessingModule
 
 
-class StreamingServer:
+class Server:
     """
     A server class for handling video streaming from multiple clients.
 
@@ -30,7 +29,7 @@ class StreamingServer:
 
     def __init__(self, host, port, new_frame_callback=None):
         """
-        Initializes the StreamingServer with host, port, and frame callback.
+        Initializes the Server with host, port, and frame callback.
 
         Args:
             host (str): Host address of the server.
@@ -65,7 +64,7 @@ class StreamingServer:
         """
         while self.network_module.running:
             try:
-                data = protocol.recv(client_socket)
+                data = Protocol.recv(client_socket)
                 if data == "REQUEST_LAST_FILE":  # if client request file
                     self.file_management_module.send_stored_file(client_socket)
                 elif data == "STREAM":  # client start stream
@@ -91,7 +90,7 @@ class StreamingServer:
                 client_socket (socket.socket): The client's socket.
                 client_address (tuple): The client's address.
             """
-        data = protocol.recv_bin(client_socket)
+        data = Protocol.recv_bin(client_socket)
         self.frame_processing_module. \
             process_received_frame(data, client_address)
 
@@ -113,10 +112,8 @@ class StreamingServer:
 
     def handle_disconnection(self, client_socket, client_address, error=None):
         """
-        Cleans up after a client disconnects, optionally logging an error.
-
+        Cleans up after a client disconnect.
         Removes the client from the server's active client dictionary,
-        logs the disconnection,
         and performs cleanup.
 
         Args:

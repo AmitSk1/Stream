@@ -4,7 +4,8 @@ Amit Skarbin
 """
 
 import os
-from Protocols import file_protocol, protocol
+from Protocols.protocol import Protocol
+from Protocols.file_protocol import FileProtocol
 
 
 class ClientFileManagementModule:
@@ -32,12 +33,12 @@ class ClientFileManagementModule:
         Requests the last uploaded file from the server.
         """
         try:
-            protocol.send(self.file_socket, "REQUEST_LAST_FILE")
+            Protocol.send(self.file_socket, "REQUEST_LAST_FILE")
         except Exception as e:
             print(f"Error requesting file: {e}")
 
     def check_if_file_upload(self):
-        response = protocol.recv(self.file_socket)
+        response = Protocol.recv(self.file_socket)
         if response == "NO_FILE":
             print("no file available for download")
             return False
@@ -51,7 +52,7 @@ class ClientFileManagementModule:
         Args:
             directory (str): The directory where the file will be saved.
         """
-        file_protocol.recv_file(self.file_socket, directory)
+        FileProtocol.recv_file(self.file_socket, directory)
         print(f"File received and saved to {directory}")
 
     def upload_file(self, file_path, username):
@@ -66,7 +67,7 @@ class ClientFileManagementModule:
             directory, base_name = os.path.split(file_path)
             new_file_name = os.path.join(directory, username + "_" + base_name)
             os.rename(file_path, new_file_name)
-            protocol.send(self.file_socket, "UPLOAD_FILE")
-            file_protocol.send_file(self.file_socket, new_file_name)
+            Protocol.send(self.file_socket, "UPLOAD_FILE")
+            FileProtocol.send_file(self.file_socket, new_file_name)
         except Exception as e:
             print(f"Error uploading file: {e}")

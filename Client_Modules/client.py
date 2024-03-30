@@ -12,10 +12,10 @@ from Client_Modules.client_streaming import ClientStreamingModule
 from Client_Modules.client_file_management_module \
     import ClientFileManagementModule
 from constants import JPEG_COMPRESSION_QUALITY, PICKLE_PROTOCOL_VERSION
-from Protocols import protocol
+from Protocols.protocol import Protocol
 
 
-class StreamingClient:
+class Client:
     """
     A class representing a streaming client that sends video data to a server.
 
@@ -24,6 +24,7 @@ class StreamingClient:
         streaming_module (ClientStreamingModule): Handles video streaming.
         file_management_module (ClientFileManagementModule): Manages file
         operations.
+
         username (str): The username of the client.
         running (bool): Indicates whether the streaming is active.
     """
@@ -75,9 +76,8 @@ class StreamingClient:
         """
         try:
             while self.running:
-                message = protocol.recv(self.network_module.listen_socket)
+                message = Protocol.recv(self.network_module.listen_socket)
                 if message == "TEST_OVER":
-
                     self.test_over = True
                     print("Received TEST_OVER from server, stopping client.")
         except Exception as e:
@@ -121,7 +121,7 @@ class StreamingClient:
             bool: True if the frame was sent successfully, False otherwise.
         """
 
-        protocol.send(self.network_module.stream_socket, "STREAM")
+        Protocol.send(self.network_module.stream_socket, "STREAM")
         result, encoded_frame = cv2. \
             imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY,
                                      JPEG_COMPRESSION_QUALITY])
@@ -132,7 +132,7 @@ class StreamingClient:
         data = pickle.dumps(frame_and_username,
                             protocol=PICKLE_PROTOCOL_VERSION)
         try:
-            protocol.send_bin(self.network_module.stream_socket, data)
+            Protocol.send_bin(self.network_module.stream_socket, data)
             return True
         except Exception as e:
             print(f"Connection closed: {e}")
@@ -145,7 +145,7 @@ class StreamingClient:
 
         # Ensure the running flag is False to stop threads
         self.running = False
-        protocol.send(self.network_module.stream_socket, "STOP")
+        Protocol.send(self.network_module.stream_socket, "STOP")
         # Wait for the streaming and listening threads to finish
         if self.stream_thread and self.stream_thread.is_alive():
             self.stream_thread.join()

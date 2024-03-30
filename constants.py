@@ -2,7 +2,6 @@
 Constants
 Amit Skarbin
 """
-import cv2
 
 CHUNK_SIZE = 4096  # bytes
 
