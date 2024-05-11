@@ -3,6 +3,7 @@ Client
 Amit Skarbin
 """
 
+
 import pickle
 import sys
 import threading
@@ -11,9 +12,8 @@ from Client_Modules.client_network_module import ClientNetworkModule
 from Client_Modules.client_streaming import ClientStreamingModule
 from Client_Modules.client_file_management_module \
     import ClientFileManagementModule
-from constants import JPEG_COMPRESSION_QUALITY, PICKLE_PROTOCOL_VERSION
+from Constants.constants import JPEG_COMPRESSION_QUALITY, PICKLE_PROTOCOL_VERSION
 from Protocols.protocol import Protocol
-
 
 class Client:
     """
@@ -43,6 +43,7 @@ class Client:
             self.network_module.file_socket)
         self.username = None
         self.test_over = False
+        self.upload_file = False
         self.stream_thread = None
         self.listen_thread = None
         self.running = False
@@ -80,6 +81,9 @@ class Client:
                 if message == "TEST_OVER":
                     self.test_over = True
                     print("Received TEST_OVER from server, stopping client.")
+                if message == "UPLOAD_FILE":
+                    self.upload_file = True
+                    print("received upload_file from server")
         except Exception as e:
             print(f"listen to server have an error: {e}")
 

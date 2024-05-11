@@ -135,7 +135,15 @@ class ClientGUI:
             messagebox.showinfo("Streaming",
                                 "You are now streaming. Good luck!")
             # check if teacher finish test
+            self.check_if_teacher_upload_file()
             self.check_test_over_flag()
+
+    def check_if_teacher_upload_file(self):
+        if self.client.upload_file:
+            messagebox.showinfo("Upload file", "The teacher uploaded file")
+            self.client.upload_file = False
+        else:
+            self.window.after(1000, self.check_if_teacher_upload_file)
 
     def check_test_over_flag(self):
         """
@@ -143,10 +151,16 @@ class ClientGUI:
         return this method every 1 second
         """
         if self.client.test_over:
-
             self.handle_test_over()
         else:
             self.window.after(1000, self.check_test_over_flag)
+
+    def handle_file_upload(self):
+        """
+        handles action to be preformed once the server upload a file,
+        show for the client a message that the server upload a file.
+        """
+        messagebox.showinfo("Upload file", "The teacher uploaded file")
 
     def handle_test_over(self):
         """
@@ -245,5 +259,5 @@ class ClientGUI:
 
 
 if __name__ == "__main__":
-    gui = ClientGUI('127.0.0.1', 1278)
+    gui = ClientGUI('127.0.0.1', 4578)
     gui.run()

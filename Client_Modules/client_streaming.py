@@ -6,10 +6,8 @@ Amit Skarbin
 import cv2
 import numpy as np
 import pyautogui
-from constants import RESOLUTION_VERTICAL, RESOLUTION_HORIZONTAL, \
+from Constants.constants import RESOLUTION_VERTICAL, RESOLUTION_HORIZONTAL, \
     CAPTURE_DEVICE_INDEX
-
-
 class ClientStreamingModule:
     """
     Manages the streaming of video data for the client.

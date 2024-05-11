@@ -5,7 +5,7 @@ Amit Skarbin
 
 import pickle
 import cv2
-from constants import FRAME_DECODE_COLOR_MODE
+from Constants.constants import FRAME_DECODE_COLOR_MODE
 
 
 class ServerFrameProcessingModule:

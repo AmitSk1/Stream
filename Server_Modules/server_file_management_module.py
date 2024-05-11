@@ -65,5 +65,6 @@ class ServerFileManagementModule:
             file_path (str): The path of the file to be considered as the last
             uploaded.
         """
+
         self.last_uploaded_file = file_path
         print("Uploading file " + file_path)

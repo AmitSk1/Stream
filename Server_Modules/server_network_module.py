@@ -37,6 +37,16 @@ class ServerNetworkModule:
             except Exception as e:
                 print(f"Error notifying client at {client_address}: {e}")
 
+    def notify_clients_test_file_upload(self):
+        """
+        Notify all connected clients that the test is over.
+        """
+        for client_address, client_socket in self.clients.items():
+            try:
+                Protocol.send(client_socket, "UPLOAD_FILE")
+            except Exception as e:
+                print(f"Error notifying client at {client_address}: {e}")
+
     def start_server(self):
         """
         Starts the server to listen for incoming connections and handle them.
@@ -59,7 +69,7 @@ class ServerNetworkModule:
                 # Add client to the dictionary
                 self.clients[client_address] = client_socket
                 # Start a new thread to handle communication with this client
-                client_thread = threading.\
+                client_thread = threading. \
                     Thread(target=self.
                            client_handler_callback,
                            args=(client_socket, client_address))
@@ -79,8 +89,6 @@ class ServerNetworkModule:
             client_socket.close()
         self.server_socket.close()
         print("Server stopped")
-
-
 
     def remove_client(self, client_address):
         """

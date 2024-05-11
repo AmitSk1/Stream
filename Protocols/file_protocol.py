@@ -3,8 +3,8 @@ Amit skarbin
 """
 
 import os
-import struct
-from constants import CHUNK_SIZE
+from Constants.constants import CHUNK_SIZE
+from Protocols.protocol import Protocol
 
 
 class FileProtocol:
@@ -12,7 +12,7 @@ class FileProtocol:
     @staticmethod
     def send_file(sock, file_path):
         """
-        Sends a file over a socket.
+        Sends a file over a socket in chunks using only methods from the Protocol class.
 
         Args:
             sock (socket.socket): The socket over which to send the file.
@@ -21,49 +21,42 @@ class FileProtocol:
         file_name = os.path.basename(file_path)
         file_name_encoded = file_name.encode()
 
-        # Send the file name size and file name
-        sock.sendall(struct.pack('>Q', len(file_name_encoded)))
-        sock.sendall(file_name_encoded)
+        # Send the file name using Protocol.send_bin
+        Protocol.send_bin(sock, file_name_encoded)
 
-        # Send the file content
+        # Open the file and send its contents in chunks
         with open(file_path, 'rb') as file:
-            file_size = os.path.getsize(file_path)
-            sock.sendall(struct.pack('>Q', file_size))
-
             while True:
-                data = file.read(CHUNK_SIZE)
-                if not data:
-                    break
-                sock.sendall(data)
+                file_data = file.read(CHUNK_SIZE)  # Read chunks of 4096 bytes
+                if not file_data:
+                    break  # Stop if no more data to read
+                Protocol.send_bin(sock, file_data)
+
+        # Send a zero-length data to indicate file transmission is done
+        Protocol.send_bin(sock, b'')
 
     @staticmethod
     def recv_file(sock, directory):
         """
-        Receives a file over a socket and saves it to the specified directory.
+        Receives a file over a socket in chunks and saves it to the specified directory
+        using only methods from the Protocol class.
 
         Args:
             sock (socket.socket): The socket from which to receive the file.
             directory (str): The directory where the file will be saved.
         """
-        # Receive the file name size and file name
-        name_size_data = sock.recv(8)
-        name_size = struct.unpack('>Q', name_size_data)[0]
-        file_name_encoded = sock.recv(name_size)
+        # Receive the file name using Protocol.recv_bin
+        file_name_encoded = Protocol.recv_bin(sock)
         file_name = file_name_encoded.decode()
 
         # Ensure the directory exists
         os.makedirs(directory, exist_ok=True)
         save_path = os.path.join(directory, file_name)
 
-        # Receive the file content
-        file_size_data = sock.recv(8)
-        file_size = struct.unpack('>Q', file_size_data)[0]
-
+        # Open the file to write the received chunks
         with open(save_path, 'wb') as file:
-            received_size = 0
-            while received_size < file_size:
-                data = sock.recv(min(CHUNK_SIZE, file_size - received_size))
-                if not data:
+            while True:
+                file_data = Protocol.recv_bin(sock)
+                if not file_data:  # Check for the zero-length data as end signal
                     break
-                file.write(data)
-                received_size += len(data)
+                file.write(file_data)
