@@ -37,16 +37,6 @@ class ServerNetworkModule:
             except Exception as e:
                 print(f"Error notifying client at {client_address}: {e}")
 
-    def notify_clients_test_file_upload(self):
-        """
-        Notify all connected clients that the test is over.
-        """
-        for client_address, client_socket in self.clients.items():
-            try:
-                Protocol.send(client_socket, "UPLOAD_FILE")
-            except Exception as e:
-                print(f"Error notifying client at {client_address}: {e}")
-
     def start_server(self):
         """
         Starts the server to listen for incoming connections and handle them.

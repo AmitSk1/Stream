@@ -13,10 +13,6 @@ class FileProtocol:
     def send_file(sock, file_path):
         """
         Sends a file over a socket in chunks using only methods from the Protocol class.
-
-        Args:
-            sock (socket.socket): The socket over which to send the file.
-            file_path (str): The path of the file to send.
         """
         file_name = os.path.basename(file_path)
         file_name_encoded = file_name.encode()
@@ -40,10 +36,6 @@ class FileProtocol:
         """
         Receives a file over a socket in chunks and saves it to the specified directory
         using only methods from the Protocol class.
-
-        Args:
-            sock (socket.socket): The socket from which to receive the file.
-            directory (str): The directory where the file will be saved.
         """
         # Receive the file name using Protocol.recv_bin
         file_name_encoded = Protocol.recv_bin(sock)

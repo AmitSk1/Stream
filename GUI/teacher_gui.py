@@ -60,7 +60,7 @@ class ServerGUI:
 
         # Load the logo image and display it
         logo_image = Image.open(
-            "background.png")
+            "C:\\Users\\Amit Skarbin\\PycharmProjects\\Stream\\GUI\\background.png")
         logo_photo = ImageTk.PhotoImage(logo_image)
         self.logo_label = ttk.Label(self.streams_frame, image=logo_photo)
         self.logo_label.image = logo_photo  # Keep a reference
@@ -111,7 +111,6 @@ class ServerGUI:
         ttk.Button(control_frame, text="Finish test",
                    command=self.finish_test).pack(pady=5)
 
-
     def upload_file(self):
         """
         Opens a file dialog to select a file to upload.
@@ -121,7 +120,6 @@ class ServerGUI:
         print(self.filename)
         self.server.file_management_module.upload_file(file_path)
         messagebox.showinfo("Upload", "File upload started.")
-        #self.server.network_module.notify_clients_test_file_upload()
 
     def finish_test(self):
         print("finish test, sending notification for clients")

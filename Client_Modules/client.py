@@ -43,7 +43,6 @@ class Client:
             self.network_module.file_socket)
         self.username = None
         self.test_over = False
-        self.upload_file = False
         self.stream_thread = None
         self.listen_thread = None
         self.running = False
@@ -81,9 +80,6 @@ class Client:
                 if message == "TEST_OVER":
                     self.test_over = True
                     print("Received TEST_OVER from server, stopping client.")
-                if message == "UPLOAD_FILE":
-                    self.upload_file = True
-                    print("received upload_file from server")
         except Exception as e:
             print(f"listen to server have an error: {e}")
 

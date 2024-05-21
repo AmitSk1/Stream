@@ -135,15 +135,7 @@ class ClientGUI:
             messagebox.showinfo("Streaming",
                                 "You are now streaming. Good luck!")
             # check if teacher finish test
-            self.check_if_teacher_upload_file()
             self.check_test_over_flag()
-
-    def check_if_teacher_upload_file(self):
-        if self.client.upload_file:
-            messagebox.showinfo("Upload file", "The teacher uploaded file")
-            self.client.upload_file = False
-        else:
-            self.window.after(1000, self.check_if_teacher_upload_file)
 
     def check_test_over_flag(self):
         """
